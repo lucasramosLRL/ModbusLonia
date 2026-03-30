@@ -282,9 +282,14 @@
   with its serial number auto-filled                                  
   6. Click it → name is auto-filled as KS-3000 #XXXXXXXX              
   7. Click Save Device → device appears in the list and polling begins
+
+
+Now the software is adding devices using de UDP search broadcast
     
-Whats the problem now:
-  - PC COM ports aren't being listed
-  - TCP devices search should be done by sending an UDP broadcast to address 255.255.255.255 with the frame 00 00 00 f6
-  - On add device screen when changing the Transport type radio button the fields below it should changem since RTU and TCP doesn't use the same fields
+Whats we need now next:
+  - Theres no way to remove a added device from the software
+  - Added device keep showing as disconnected on the device info card
+  - Model name isn't beeing filled, for exemple, F2 = KS-3000
+  - Device added as "slave 1", this description should be given by the user
+  
   
