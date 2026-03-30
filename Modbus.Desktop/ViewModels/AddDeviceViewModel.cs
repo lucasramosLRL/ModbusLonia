@@ -216,7 +216,7 @@ public partial class AddDeviceViewModel : ObservableObject
             else
             {
                 await foreach (var result in _scanService.ScanTcpAsync(
-                    TcpPort, progress, token))
+                    progress, token))
                 {
                     var vm = new ScanResultViewModel(result);
                     await Dispatcher.UIThread.InvokeAsync(() => ScanResults.Add(vm));

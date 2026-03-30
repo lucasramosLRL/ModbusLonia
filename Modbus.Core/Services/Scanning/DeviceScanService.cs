@@ -81,8 +81,10 @@ public class DeviceScanService : IDeviceScanService
     // Discovery frame sent as UDP broadcast: 00 00 00 F6
     private static readonly byte[] UdpDiscoveryFrame = [0x00, 0x00, 0x00, 0xF6];
 
+    private const int UdpDiscoveryPort = 30718;
+    private const int ModbusTcpPort = 502;
+
     public async IAsyncEnumerable<DeviceScanResult> ScanTcpAsync(
-        int port,
         IProgress<ScanProgress>? progress = null,
         [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
@@ -102,32 +104,40 @@ public class DeviceScanService : IDeviceScanService
             udp.EnableBroadcast = true;
             udp.Client.Bind(new IPEndPoint(IPAddress.Any, 0));
 
-            var broadcastEp = new IPEndPoint(IPAddress.Broadcast, port);
-            await udp.SendAsync(UdpDiscoveryFrame, UdpDiscoveryFrame.Length, broadcastEp);
+            var broadcastEp = new IPEndPoint(IPAddress.Broadcast, UdpDiscoveryPort);
 
-            using var listenCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-            listenCts.CancelAfter(TimeSpan.FromSeconds(3));
-
-            try
+            // Send discovery broadcast 3 times, listening 2s after each
+            for (int attempt = 0; attempt < 3; attempt++)
             {
-                while (!listenCts.Token.IsCancellationRequested)
+                await udp.SendAsync(UdpDiscoveryFrame, UdpDiscoveryFrame.Length, broadcastEp);
+
+                using var listenCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+                listenCts.CancelAfter(TimeSpan.FromMilliseconds(2000));
+
+                try
                 {
-                    var udpResult = await udp.ReceiveAsync(listenCts.Token);
-                    var ip = udpResult.RemoteEndPoint.Address.ToString();
-                    if (!respondingIps.Contains(ip))
+                    while (!listenCts.Token.IsCancellationRequested)
                     {
-                        respondingIps.Add(ip);
-                        progress?.Report(new ScanProgress
+                        var udpResult = await udp.ReceiveAsync(listenCts.Token);
+                        var ip = udpResult.RemoteEndPoint.Address.ToString();
+                        if (!respondingIps.Contains(ip))
                         {
-                            Current = 0,
-                            Total = 1,
-                            Found = respondingIps.Count,
-                            CurrentLabel = $"Heard from {ip}"
-                        });
+                            respondingIps.Add(ip);
+                            progress?.Report(new ScanProgress
+                            {
+                                Current = 0,
+                                Total = 1,
+                                Found = respondingIps.Count,
+                                CurrentLabel = $"Heard from {ip}"
+                            });
+                        }
                     }
                 }
+                catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
+                {
+                    // 2s listen window closed — next attempt
+                }
             }
-            catch (OperationCanceledException) { /* listen window closed */ }
         }
 
         // Step 2 — connect via Modbus TCP to each discovered IP to read device info
@@ -147,7 +157,7 @@ public class DeviceScanService : IDeviceScanService
                 CurrentLabel = ip
             });
 
-            var tcpConfig = new TcpConfig { IpAddress = ip, Port = port };
+            var tcpConfig = new TcpConfig { IpAddress = ip, Port = ModbusTcpPort };
             var tempDevice = new ModbusDevice
             {
                 Name = "scan-probe",

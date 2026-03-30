@@ -12,7 +12,6 @@ public interface IDeviceScanService
         CancellationToken cancellationToken = default);
 
     IAsyncEnumerable<DeviceScanResult> ScanTcpAsync(
-        int port,
         IProgress<ScanProgress>? progress = null,
         CancellationToken cancellationToken = default);
 }
