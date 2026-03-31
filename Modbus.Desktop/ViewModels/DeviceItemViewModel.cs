@@ -36,7 +36,7 @@ public partial class DeviceItemViewModel : ObservableObject
     public string? ModelName => Device.DeviceModel?.Name;
 
     public string ConnectionAddress => Device.TransportType == TransportType.Tcp
-        ? $"{Device.Tcp?.IpAddress}:{Device.Tcp?.Port}"
+        ? Device.Tcp?.IpAddress ?? "—"
         : Device.Rtu?.PortName ?? "—";
 
     public string StatusText => HasError ? "Error" : IsConnected ? "Connected" : "Disconnected";

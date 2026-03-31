@@ -287,9 +287,7 @@
 Now the software is adding devices using de UDP search broadcast
     
 Whats we need now next:
-  X - Added device keep showing as disconnected on the device info card ** Tried to fix and failed
-  - On device info card theres two address, on TCP devices the first address is the IP:Port on RTU devices address is the COM port, whe need another name that inify these two
-  - IP doesn't need to display the port, since it will always be 502, maybe later we change it
+  X - Added device keep showing as disconnected and error on the device info card ** Tried to fix and failed need to try again...
   - Create a string dictionary to translate the software from english to brazillian portuguese
   - Create settings screen with the language option, the user preference should be store for next sessions
   - Add confirmation on device deletion

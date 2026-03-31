@@ -48,7 +48,7 @@
                     <TextBlock Text="{Binding Device.TransportType}" FontWeight="Medium" Foreground="#FFFFFF" />
                 </StackPanel>
                 <StackPanel Grid.Column="1" Spacing="4">
-                    <TextBlock Text="Address" FontSize="11" Opacity="0.55" Foreground="#FFFFFF" />
+                    <TextBlock Text="Connection" FontSize="11" Opacity="0.55" Foreground="#FFFFFF" />
                     <TextBlock Text="{Binding Device.ConnectionAddress}" FontWeight="Medium" Foreground="#FFFFFF" />
                 </StackPanel>
                 <StackPanel Grid.Column="2" Spacing="4">
