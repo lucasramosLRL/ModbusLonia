@@ -289,7 +289,7 @@ Now the software is adding devices using de UDP search broadcast
 Whats we need now next:
   X - Added device keep showing as disconnected and error on the device info card ** Tried to fix and failed need to try again...
   - The pooling is working fine on TCP, now the RTU is having the same issue and still shows "connected" when a turn my device off
-  - Move the COM port, baud rate, stopbits to a settings page
+  - Move the COM port, baud rate, stopbits, parity to a new settings page ** Need to verify if the software is made to work with more than one COM port
   - Create a string dictionary to translate the software from english to brazillian portuguese and put it on settings page
   - Add confirmation on device deletion
   
