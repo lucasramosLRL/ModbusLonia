@@ -60,7 +60,7 @@ public class RtuModbusTransport : IModbusTransport
 
             return expectedResponseLength > 0
                 ? await ReadExactAsync(port.BaseStream, expectedResponseLength, cancellationToken)
-                : await ReadUntilSilenceAsync(port.BaseStream, cancellationToken);
+                : await ReadUntilSilenceAsync(port, cancellationToken);
         }
         finally
         {
@@ -84,34 +84,41 @@ public class RtuModbusTransport : IModbusTransport
 
     /// <summary>
     /// Reads bytes until no new data arrives within <see cref="VariableLengthReadTimeoutMs"/>.
-    /// Used for responses where the length is not known ahead of time (e.g. FC17).
+    /// Uses polling on <see cref="SerialPort.BytesToRead"/> because
+    /// SerialPort.BaseStream.ReadAsync on Windows ignores both CancellationToken and ReadTimeout.
     /// </summary>
-    private static async Task<byte[]> ReadUntilSilenceAsync(Stream stream, CancellationToken cancellationToken)
+    private static async Task<byte[]> ReadUntilSilenceAsync(SerialPort port, CancellationToken cancellationToken)
     {
-        var chunks = new List<byte[]>();
-        var temp = new byte[256];
+        var buffer = new List<byte>();
+        var silenceTimer = System.Diagnostics.Stopwatch.StartNew();
 
-        using var cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-        cts.CancelAfter(VariableLengthReadTimeoutMs);
-
-        try
+        while (!cancellationToken.IsCancellationRequested)
         {
-            while (true)
+            if (port.BytesToRead > 0)
             {
-                int read = await stream.ReadAsync(temp.AsMemory(), cts.Token);
-                if (read == 0) break;
-                chunks.Add(temp[..read].ToArray());
-
-                // Reset timeout after each received chunk
-                cts.CancelAfter(VariableLengthReadTimeoutMs);
+                var available = port.BytesToRead;
+                var temp = new byte[available];
+                port.Read(temp, 0, available);
+                buffer.AddRange(temp);
+                silenceTimer.Restart();
+            }
+            else if (buffer.Count > 0 && silenceTimer.ElapsedMilliseconds > VariableLengthReadTimeoutMs)
+            {
+                // Received data + silence detected → frame complete.
+                break;
+            }
+            else if (buffer.Count == 0 && silenceTimer.ElapsedMilliseconds > 1000)
+            {
+                // No data at all within 1 second → no device at this address.
+                break;
+            }
+            else
+            {
+                await Task.Delay(5, cancellationToken);
             }
         }
-        catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
-        {
-            // Inter-frame silence detected — this is the expected end of the RTU frame.
-        }
 
-        return chunks.Count == 0 ? [] : [.. chunks.SelectMany(c => c)];
+        return [.. buffer];
     }
 
     private static Parity MapParity(DomainParity parity) => parity switch
