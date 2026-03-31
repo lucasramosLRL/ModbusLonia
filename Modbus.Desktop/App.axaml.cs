@@ -55,7 +55,7 @@ public partial class App : Application
     {
         var dbPath = Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-            "ModbusApp", "modbus.db");
+            "ModbusApp", "modbusapp.db");
         Directory.CreateDirectory(Path.GetDirectoryName(dbPath)!);
 
         services.AddDbContext<ModbusDbContext>(

@@ -288,7 +288,9 @@ Now the software is adding devices using de UDP search broadcast
     
 Whats we need now next:
   X - Added device keep showing as disconnected on the device info card ** Tried to fix and failed
-  - The same device can be added twice
-  - Device added as "slave 1", this description should be given by the user
+  - The RTU search isn't working properly
+  - Create a string dictionary to translate the software from english to brazillian portuguese
+  - Create settings screen with the language option, the user preference should be store for next sessions
+  - Add confirmation on device deletion
   
   

@@ -72,7 +72,7 @@
                                                    Opacity="0.55"
                                                    Foreground="#FFFFFF" />
                                         <TextBlock Text="·" Opacity="0.35" Foreground="#FFFFFF" />
-                                        <TextBlock Text="Slave " FontSize="12" Opacity="0.55" Foreground="#FFFFFF" />
+                                        <TextBlock Text="Addr " FontSize="12" Opacity="0.55" Foreground="#FFFFFF" />
                                         <TextBlock Text="{Binding SlaveId}" FontSize="12" Opacity="0.55" Foreground="#FFFFFF" />
                                     </StackPanel>
                                 </StackPanel>

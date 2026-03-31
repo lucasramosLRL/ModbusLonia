@@ -11,6 +11,7 @@ public class ModbusDevice
     /// <summary>Modbus slave/unit identifier (1–247).</summary>
     public byte SlaveId { get; set; }
     public TransportType TransportType { get; set; }
+    public uint? SerialNumber { get; set; }
     public bool IsActive { get; set; } = true;
     public DateTime? LastSeenAt { get; set; }
 

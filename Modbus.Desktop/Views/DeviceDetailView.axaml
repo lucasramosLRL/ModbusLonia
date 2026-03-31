@@ -52,7 +52,7 @@
                     <TextBlock Text="{Binding Device.ConnectionAddress}" FontWeight="Medium" Foreground="#FFFFFF" />
                 </StackPanel>
                 <StackPanel Grid.Column="2" Spacing="4">
-                    <TextBlock Text="Slave ID" FontSize="11" Opacity="0.55" Foreground="#FFFFFF" />
+                    <TextBlock Text="Address" FontSize="11" Opacity="0.55" Foreground="#FFFFFF" />
                     <TextBlock Text="{Binding Device.SlaveId}" FontWeight="Medium" Foreground="#FFFFFF" />
                 </StackPanel>
                 <StackPanel Grid.Column="3" Spacing="4">

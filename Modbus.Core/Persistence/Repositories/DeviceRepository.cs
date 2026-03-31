@@ -22,6 +22,9 @@ public class DeviceRepository : IDeviceRepository
                 .ThenInclude(m => m!.Registers)
             .FirstOrDefaultAsync(d => d.Id == id, cancellationToken);
 
+    public async Task<bool> ExistsBySerialNumberAsync(uint serialNumber, CancellationToken cancellationToken = default) =>
+        await _db.Devices.AnyAsync(d => d.SerialNumber == serialNumber, cancellationToken);
+
     public async Task AddAsync(ModbusDevice device, CancellationToken cancellationToken = default)
     {
         _db.Devices.Add(device);

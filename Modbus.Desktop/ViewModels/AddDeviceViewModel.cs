@@ -258,6 +258,16 @@ public partial class AddDeviceViewModel : ObservableObject
 
         try
         {
+            var serialNumber = SelectedResult?.Result.SerialNumber;
+
+            // Prevent duplicate devices with the same serial number
+            if (serialNumber.HasValue &&
+                await _deviceRepository.ExistsBySerialNumberAsync(serialNumber.Value))
+            {
+                SaveError = $"A device with serial number {serialNumber.Value:D8} already exists.";
+                return;
+            }
+
             int? deviceModelId = null;
             if (SelectedResult?.Result.ModelName is { } modelName)
             {
@@ -270,6 +280,7 @@ public partial class AddDeviceViewModel : ObservableObject
                 Name = DeviceName,
                 SlaveId = SlaveId,
                 TransportType = SelectedTransport,
+                SerialNumber = serialNumber,
                 IsActive = true,
                 DeviceModelId = deviceModelId
             };
