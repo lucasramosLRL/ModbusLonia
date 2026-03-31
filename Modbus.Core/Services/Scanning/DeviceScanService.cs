@@ -1,4 +1,6 @@
+using System.Collections.Concurrent;
 using System.Net;
+using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Runtime.CompilerServices;
 using Modbus.Core.Domain.Entities;
@@ -96,59 +98,55 @@ public class DeviceScanService : IDeviceScanService
             CurrentLabel = "Broadcasting..."
         });
 
-        // Step 1 — UDP broadcast and collect responding IPs + response data
-        var respondingDevices = new List<(string Ip, byte[] UdpResponse)>();
+        // Step 1 — UDP broadcast from all active adapters and collect responding IPs + response data
+        var respondingDevices = new ConcurrentDictionary<string, byte[]>(StringComparer.OrdinalIgnoreCase);
 
-        using (var udp = new UdpClient())
+        var localAddresses = GetBroadcastInterfaces();
+        var udpClients = localAddresses
+            .Select(ip =>
+            {
+                var c = new UdpClient();
+                c.EnableBroadcast = true;
+                c.Client.Bind(new IPEndPoint(ip, 0));
+                return c;
+            })
+            .ToList();
+
+        try
         {
-            udp.EnableBroadcast = true;
-            udp.Client.Bind(new IPEndPoint(IPAddress.Any, 0));
-
             var broadcastEp = new IPEndPoint(IPAddress.Broadcast, UdpDiscoveryPort);
 
-            // Send discovery broadcast 3 times, listening 2s after each
+            // Send discovery broadcast 3 times from all adapters, listening 2s after each
             for (int attempt = 0; attempt < 3; attempt++)
             {
-                await udp.SendAsync(UdpDiscoveryFrame, UdpDiscoveryFrame.Length, broadcastEp);
+                await Task.WhenAll(udpClients.Select(c =>
+                    c.SendAsync(UdpDiscoveryFrame, UdpDiscoveryFrame.Length, broadcastEp)));
 
                 using var listenCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
                 listenCts.CancelAfter(TimeSpan.FromMilliseconds(2000));
 
-                try
-                {
-                    while (!listenCts.Token.IsCancellationRequested)
-                    {
-                        var udpResult = await udp.ReceiveAsync(listenCts.Token);
-                        var ip = udpResult.RemoteEndPoint.Address.ToString();
-                        if (!respondingDevices.Any(r => r.Ip == ip))
-                        {
-                            respondingDevices.Add((ip, udpResult.Buffer));
-                            progress?.Report(new ScanProgress
-                            {
-                                Current = 0,
-                                Total = 1,
-                                Found = respondingDevices.Count,
-                                CurrentLabel = $"Heard from {ip}"
-                            });
-                        }
-                    }
-                }
-                catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
-                {
-                    // 2s listen window closed — next attempt
-                }
+                await Task.WhenAll(udpClients.Select(c =>
+                    DrainClientAsync(c, respondingDevices, listenCts.Token, progress, cancellationToken)));
             }
+        }
+        finally
+        {
+            foreach (var c in udpClients)
+                c.Dispose();
         }
 
         // Step 2 — connect via Modbus TCP to each discovered IP to read device info
-        int total = respondingDevices.Count;
+        var deviceList = respondingDevices
+            .Select(kv => (Ip: kv.Key, UdpResponse: kv.Value))
+            .ToList();
+        int total = deviceList.Count;
         int found = 0;
 
-        for (int i = 0; i < respondingDevices.Count; i++)
+        for (int i = 0; i < deviceList.Count; i++)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            var (ip, udpResponse) = respondingDevices[i];
+            var (ip, udpResponse) = deviceList[i];
             var udpInfo = ParseUdpResponse(udpResponse);
 
             progress?.Report(new ScanProgress
@@ -207,6 +205,62 @@ public class DeviceScanService : IDeviceScanService
 
             found++;
             yield return result;
+        }
+    }
+
+    private static IReadOnlyList<IPAddress> GetBroadcastInterfaces()
+    {
+        var results = new List<IPAddress>();
+
+        foreach (var nic in NetworkInterface.GetAllNetworkInterfaces())
+        {
+            if (nic.OperationalStatus != OperationalStatus.Up) continue;
+            if (nic.NetworkInterfaceType == NetworkInterfaceType.Loopback) continue;
+            if (nic.NetworkInterfaceType == NetworkInterfaceType.Tunnel) continue;
+
+            foreach (var unicast in nic.GetIPProperties().UnicastAddresses)
+            {
+                if (unicast.Address.AddressFamily != AddressFamily.InterNetwork) continue;
+                if (IPAddress.IsLoopback(unicast.Address)) continue;
+                results.Add(unicast.Address);
+            }
+        }
+
+        // Fallback: if nothing passed the filter, use original behavior
+        if (results.Count == 0)
+            results.Add(IPAddress.Any);
+
+        return results;
+    }
+
+    private static async Task DrainClientAsync(
+        UdpClient udp,
+        ConcurrentDictionary<string, byte[]> respondingDevices,
+        CancellationToken listenToken,
+        IProgress<ScanProgress>? progress,
+        CancellationToken userCancellationToken)
+    {
+        try
+        {
+            while (!listenToken.IsCancellationRequested)
+            {
+                var udpResult = await udp.ReceiveAsync(listenToken);
+                var ip = udpResult.RemoteEndPoint.Address.ToString();
+                if (respondingDevices.TryAdd(ip, udpResult.Buffer))
+                {
+                    progress?.Report(new ScanProgress
+                    {
+                        Current = 0,
+                        Total = 1,
+                        Found = respondingDevices.Count,
+                        CurrentLabel = $"Heard from {ip}"
+                    });
+                }
+            }
+        }
+        catch (OperationCanceledException) when (!userCancellationToken.IsCancellationRequested)
+        {
+            // 2s listen window closed — normal
         }
     }
 

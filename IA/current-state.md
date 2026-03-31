@@ -285,6 +285,8 @@
 
 
 Now the software is adding devices using de UDP search broadcast
+
+UDP search command is now send to all network adapters
     
 Whats we need now next:
   X - Added device keep showing as disconnected and error on the device info card ** Tried to fix and failed need to try again...

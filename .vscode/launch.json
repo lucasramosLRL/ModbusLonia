@@ -1,0 +1,16 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug Modbus.Desktop",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${workspaceFolder}/Modbus.Desktop/bin/Debug/net8.0/Modbus.Desktop.exe",
+            "args": [],
+            "cwd": "${workspaceFolder}/Modbus.Desktop",
+            "stopAtEntry": false,
+            "console": "internalConsole"
+        }
+    ]
+}
