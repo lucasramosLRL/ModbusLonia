@@ -287,27 +287,34 @@ public partial class AddDeviceViewModel : ObservableObject
 
             if (SelectedTransport == TransportType.Rtu)
             {
-                device.Rtu = SelectedResult?.Result.Rtu ?? new RtuConfig
+                var src = SelectedResult?.Result.Rtu;
+                device.Rtu = new RtuConfig
                 {
-                    PortName = SelectedPort ?? "",
-                    BaudRate = SelectedBaudRate,
-                    DataBits = DataBits,
-                    Parity = SelectedParity,
-                    StopBits = SelectedStopBits
+                    PortName = src?.PortName ?? SelectedPort ?? "",
+                    BaudRate = src?.BaudRate ?? SelectedBaudRate,
+                    DataBits = src?.DataBits ?? DataBits,
+                    Parity = src?.Parity ?? SelectedParity,
+                    StopBits = src?.StopBits ?? SelectedStopBits
                 };
             }
             else
             {
-                device.Tcp = SelectedResult?.Result.Tcp ?? new TcpConfig
+                var src = SelectedResult?.Result.Tcp;
+                device.Tcp = new TcpConfig
                 {
-                    IpAddress = DeviceIp,
-                    Port = TcpPort
+                    IpAddress = src?.IpAddress ?? DeviceIp,
+                    Port = src?.Port ?? TcpPort
                 };
             }
 
             await _deviceRepository.AddAsync(device);
             await _parent.LoadDevicesAsync();
-            _parent.NavigateBack();
+
+            // Stay on this screen so the user can add more devices from the list
+            DeviceName = "";
+            SelectedResult = null;
+            SaveError = null;
+            ScanStatus = "Device saved. Select another from the list or go back.";
         }
         catch (Exception ex)
         {
