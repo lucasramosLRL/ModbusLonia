@@ -287,8 +287,8 @@
 Now the software is adding devices using de UDP search broadcast
     
 Whats we need now next:
-  - Added device keep showing as disconnected on the device info card
-  - Model name isn't beeing filled in DeviceDetail, for exemple, F2 return should be a KS-3000
+  X - Added device keep showing as disconnected on the device info card ** Tried to fix and failed
+  - The same device can be added twice
   - Device added as "slave 1", this description should be given by the user
   
   

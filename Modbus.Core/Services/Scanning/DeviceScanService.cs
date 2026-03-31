@@ -96,8 +96,8 @@ public class DeviceScanService : IDeviceScanService
             CurrentLabel = "Broadcasting..."
         });
 
-        // Step 1 — UDP broadcast and collect responding IPs
-        var respondingIps = new List<string>();
+        // Step 1 — UDP broadcast and collect responding IPs + response data
+        var respondingDevices = new List<(string Ip, byte[] UdpResponse)>();
 
         using (var udp = new UdpClient())
         {
@@ -120,14 +120,14 @@ public class DeviceScanService : IDeviceScanService
                     {
                         var udpResult = await udp.ReceiveAsync(listenCts.Token);
                         var ip = udpResult.RemoteEndPoint.Address.ToString();
-                        if (!respondingIps.Contains(ip))
+                        if (!respondingDevices.Any(r => r.Ip == ip))
                         {
-                            respondingIps.Add(ip);
+                            respondingDevices.Add((ip, udpResult.Buffer));
                             progress?.Report(new ScanProgress
                             {
                                 Current = 0,
                                 Total = 1,
-                                Found = respondingIps.Count,
+                                Found = respondingDevices.Count,
                                 CurrentLabel = $"Heard from {ip}"
                             });
                         }
@@ -141,14 +141,16 @@ public class DeviceScanService : IDeviceScanService
         }
 
         // Step 2 — connect via Modbus TCP to each discovered IP to read device info
-        int total = respondingIps.Count;
+        int total = respondingDevices.Count;
         int found = 0;
 
-        for (int i = 0; i < respondingIps.Count; i++)
+        for (int i = 0; i < respondingDevices.Count; i++)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            var ip = respondingIps[i];
+            var (ip, udpResponse) = respondingDevices[i];
+            var udpInfo = ParseUdpResponse(udpResponse);
+
             progress?.Report(new ScanProgress
             {
                 Current = i + 1,
@@ -180,11 +182,25 @@ public class DeviceScanService : IDeviceScanService
             }
             catch (Exception)
             {
-                // Device responded to broadcast but didn't answer Modbus — return with basic info
+                // Modbus TCP failed — use device info parsed from UDP response
+                string? modelName = udpInfo.DeviceCode.HasValue
+                    ? DeviceCodeRegistry.GetModelName(udpInfo.DeviceCode.Value)
+                    : null;
+
+                string suggestedName = (modelName, udpInfo.SerialNumber) switch
+                {
+                    (not null, not null) => $"{modelName} #{udpInfo.SerialNumber.Value:D8}",
+                    (not null, null)     => $"{modelName} @ {ip}",
+                    _                    => $"Device @ {ip}"
+                };
+
                 result = new DeviceScanResult
                 {
                     SlaveId = 1,
-                    SuggestedName = $"Device @ {ip}",
+                    DeviceCode = udpInfo.DeviceCode,
+                    ModelName = modelName,
+                    SerialNumber = udpInfo.SerialNumber,
+                    SuggestedName = suggestedName,
                     Tcp = tcpConfig
                 };
             }
@@ -192,6 +208,22 @@ public class DeviceScanService : IDeviceScanService
             found++;
             yield return result;
         }
+    }
+
+    /// <summary>
+    /// Parses the UDP discovery response.
+    /// Format: [0-3] Header (00 00 00 F7) | [4-7] Serial (uint32 BE) | [8] Device code | [9] Special version
+    /// </summary>
+    private static (uint? SerialNumber, byte? DeviceCode, byte? SpecialVersion) ParseUdpResponse(byte[] buffer)
+    {
+        if (buffer is null || buffer.Length < 10)
+            return (null, null, null);
+
+        uint serialNumber = (uint)(buffer[4] << 24 | buffer[5] << 16 | buffer[6] << 8 | buffer[7]);
+        byte deviceCode = buffer[8];
+        byte specialVersion = buffer[9];
+
+        return (serialNumber, deviceCode, specialVersion);
     }
 
     private static async Task<uint?> TryReadSerialNumberAsync(
