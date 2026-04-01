@@ -97,6 +97,9 @@ public partial class DeviceListViewModel : ObservableObject
 
     internal void NavigateBack() => NavigationRequested?.Invoke(this, this);
 
+    internal Task SuspendRtuPollingAsync() => _pollingEngine.SuspendRtuPollingAsync();
+    internal void ResumeRtuPolling()       => _pollingEngine.ResumeRtuPolling();
+
     private void OnRegisterValuesUpdated(object? sender, RegisterValuesUpdatedEventArgs e)
     {
         Dispatcher.UIThread.InvokeAsync(() =>

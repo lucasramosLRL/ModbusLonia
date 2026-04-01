@@ -206,11 +206,19 @@ public partial class AddDeviceViewModel : ObservableObject
                     StopBits = SelectedStopBits
                 };
 
-                await foreach (var result in _scanService.ScanRtuAsync(
-                    config, StartAddress, EndAddress, progress, token))
+                await _parent.SuspendRtuPollingAsync();
+                try
                 {
-                    var vm = new ScanResultViewModel(result);
-                    await Dispatcher.UIThread.InvokeAsync(() => ScanResults.Add(vm));
+                    await foreach (var result in _scanService.ScanRtuAsync(
+                        config, StartAddress, EndAddress, progress, token))
+                    {
+                        var vm = new ScanResultViewModel(result);
+                        await Dispatcher.UIThread.InvokeAsync(() => ScanResults.Add(vm));
+                    }
+                }
+                finally
+                {
+                    _parent.ResumeRtuPolling();
                 }
             }
             else

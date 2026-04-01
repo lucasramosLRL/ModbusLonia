@@ -12,4 +12,7 @@ public interface IPollingEngine : IAsyncDisposable
 
     Task StartAsync(CancellationToken cancellationToken = default);
     Task StopAsync();
+
+    Task SuspendRtuPollingAsync(CancellationToken cancellationToken = default);
+    void ResumeRtuPolling();
 }

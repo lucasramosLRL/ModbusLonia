@@ -11,6 +11,7 @@ public class PollingEngine : IPollingEngine
     private readonly TimeSpan _pollInterval;
 
     private readonly ConcurrentDictionary<int, DeviceContext> _devices = new();
+    private readonly SemaphoreSlim _rtuGate = new(1, 1);
     private CancellationTokenSource? _cts;
     private Task? _loopTask;
 
@@ -61,10 +62,17 @@ public class PollingEngine : IPollingEngine
             ctx.Service.Dispose();
 
         _devices.Clear();
+        _rtuGate.Dispose();
     }
 
     public ValueTask DisposeAsync() =>
         new(StopAsync());
+
+    public Task SuspendRtuPollingAsync(CancellationToken cancellationToken = default) =>
+        _rtuGate.WaitAsync(cancellationToken);
+
+    public void ResumeRtuPolling() =>
+        _rtuGate.Release();
 
     // ── Main loop ────────────────────────────────────────────────────────────
 
@@ -111,6 +119,19 @@ public class PollingEngine : IPollingEngine
         using var pollCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
         pollCts.CancelAfter(PollTimeout);
 
+        if (ctx.Device.TransportType == TransportType.Rtu)
+        {
+            await _rtuGate.WaitAsync(pollCts.Token);
+            try   { await DoPollAsync(ctx, cancellationToken, pollCts); }
+            finally { _rtuGate.Release(); }
+            return;
+        }
+
+        await DoPollAsync(ctx, cancellationToken, pollCts);
+    }
+
+    private async Task DoPollAsync(DeviceContext ctx, CancellationToken cancellationToken, CancellationTokenSource pollCts)
+    {
         try
         {
             // Always disconnect and reconnect to get a fresh connection state.
@@ -131,17 +152,23 @@ public class PollingEngine : IPollingEngine
                     Values    = Array.Empty<RegisterValue>(),
                     Timestamp = timestamp
                 });
-                return;
+            }
+            else
+            {
+                var values = await ReadAllRegistersAsync(ctx.Service, ctx.Device, timestamp, pollCts.Token);
+
+                RegisterValuesUpdated?.Invoke(this, new RegisterValuesUpdatedEventArgs
+                {
+                    Device    = ctx.Device,
+                    Values    = values,
+                    Timestamp = timestamp
+                });
             }
 
-            var values = await ReadAllRegistersAsync(ctx.Service, ctx.Device, timestamp, pollCts.Token);
-
-            RegisterValuesUpdated?.Invoke(this, new RegisterValuesUpdatedEventArgs
-            {
-                Device    = ctx.Device,
-                Values    = values,
-                Timestamp = timestamp
-            });
+            // RTU: release the COM port immediately after the poll so other
+            // operations (e.g. device scan) can open the same port between cycles.
+            if (ctx.Device.TransportType == TransportType.Rtu)
+                try { await ctx.Service.DisconnectAsync(); } catch { }
         }
         catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
         {

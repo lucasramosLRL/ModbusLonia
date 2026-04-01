@@ -19,6 +19,6 @@ public class DeviceScanResult
         : "—";
 
     public string SerialNumberText => SerialNumber.HasValue
-        ? $"{SerialNumber.Value:D8}"
+        ? $"{SerialNumber.Value:D7}"
         : "—";
 }

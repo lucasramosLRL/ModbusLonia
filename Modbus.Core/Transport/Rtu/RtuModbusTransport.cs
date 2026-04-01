@@ -23,6 +23,13 @@ public class RtuModbusTransport : IModbusTransport
 
     public Task ConnectAsync(CancellationToken cancellationToken = default)
     {
+        if (_port?.IsOpen == true)
+            return Task.CompletedTask;
+
+        // Dispose the previous instance before creating a new one.
+        // Close() alone does not release the OS handle on Windows.
+        _port?.Dispose();
+
         _port = new SerialPort(
             _config.PortName,
             _config.BaudRate,
@@ -39,7 +46,10 @@ public class RtuModbusTransport : IModbusTransport
 
     public Task DisconnectAsync()
     {
-        _port?.Close();
+        if (_port is null) return Task.CompletedTask;
+        _port.Close();
+        _port.Dispose();
+        _port = null;
         return Task.CompletedTask;
     }
 
