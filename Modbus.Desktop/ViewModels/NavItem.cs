@@ -1,7 +1,12 @@
+using CommunityToolkit.Mvvm.ComponentModel;
+
 namespace Modbus.Desktop.ViewModels;
 
-public class NavItem
+public partial class NavItem : ObservableObject
 {
-    public required string Title { get; init; }
+    public required string Key  { get; init; }
     public required string Icon { get; init; }
+
+    [ObservableProperty]
+    private string _title = "";
 }

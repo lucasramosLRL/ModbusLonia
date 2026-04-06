@@ -1,6 +1,7 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:Modbus.Desktop.ViewModels"
+             xmlns:svc="using:Modbus.Desktop.Services"
              x:Class="Modbus.Desktop.Views.DeviceListView"
              x:DataType="vm:DeviceListViewModel">
 
@@ -8,17 +9,17 @@
 
         <!-- Header -->
         <Grid DockPanel.Dock="Top" ColumnDefinitions="*,Auto,Auto" Margin="0,0,0,16">
-            <TextBlock Text="Devices"
+            <TextBlock Text="{Binding [Devices], Source={x:Static svc:LocalizationService.Instance}}"
                        FontSize="26"
                        FontWeight="SemiBold"
                        VerticalAlignment="Center" />
             <Button Grid.Column="1"
-                    Content="+ Add Device"
+                    Content="{Binding [AddDevice], Source={x:Static svc:LocalizationService.Instance}}"
                     Command="{Binding OpenAddDeviceCommand}"
                     Padding="16,8"
                     Margin="0,0,8,0" />
             <Button Grid.Column="2"
-                    Content="Refresh"
+                    Content="{Binding [Refresh], Source={x:Static svc:LocalizationService.Instance}}"
                     Command="{Binding LoadDevicesCommand}"
                     Padding="16,8" />
         </Grid>
@@ -32,7 +33,7 @@
 
         <!-- Empty state -->
         <TextBlock DockPanel.Dock="Top"
-                   Text="No devices found. Add a device to get started."
+                   Text="{Binding [NoDevicesFound], Source={x:Static svc:LocalizationService.Instance}}"
                    IsVisible="{Binding !Devices.Count}"
                    Opacity="0.5"
                    HorizontalAlignment="Center"
@@ -67,13 +68,15 @@
                                                    Opacity="0.55"
                                                    Foreground="#FFFFFF" />
                                         <TextBlock Text="·" Opacity="0.35" Foreground="#FFFFFF" />
-                                        <TextBlock Text="{Binding ModelName, FallbackValue='Unknown model'}"
+                                        <TextBlock Text="{Binding ModelDisplayName}"
                                                    FontSize="12"
                                                    Opacity="0.55"
                                                    Foreground="#FFFFFF" />
                                         <TextBlock Text="·" Opacity="0.35" Foreground="#FFFFFF" />
-                                        <TextBlock Text="Addr " FontSize="12" Opacity="0.55" Foreground="#FFFFFF" />
-                                        <TextBlock Text="{Binding SlaveId}" FontSize="12" Opacity="0.55" Foreground="#FFFFFF" />
+                                        <TextBlock Text="{Binding SlaveIdText}"
+                                                   FontSize="12"
+                                                   Opacity="0.55"
+                                                   Foreground="#FFFFFF" />
                                     </StackPanel>
                                 </StackPanel>
 
@@ -87,7 +90,7 @@
                                                FontSize="13"
                                                FontWeight="Medium"
                                                Foreground="#FFFFFF" />
-                                    <TextBlock Text="{Binding LastSeenAt, StringFormat='{}{0:HH:mm:ss}', FallbackValue='Never seen'}"
+                                    <TextBlock Text="{Binding LastSeenText}"
                                                FontSize="11"
                                                Opacity="0.6"
                                                HorizontalAlignment="Right"
@@ -95,11 +98,11 @@
                                     <StackPanel Orientation="Horizontal"
                                               HorizontalAlignment="Right"
                                               Spacing="6">
-                                        <Button Content="Open →"
+                                        <Button Content="{Binding [Open], Source={x:Static svc:LocalizationService.Instance}}"
                                                 Padding="12,6"
                                                 Command="{Binding #DeviceList.DataContext.OpenDeviceDetailCommand}"
                                                 CommandParameter="{Binding}" />
-                                        <Button Content="Delete"
+                                        <Button Content="{Binding [Delete], Source={x:Static svc:LocalizationService.Instance}}"
                                                 Padding="12,6"
                                                 Click="OnDeleteClick"
                                                 Tag="{Binding}" />

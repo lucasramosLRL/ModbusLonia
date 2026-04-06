@@ -287,10 +287,31 @@
 Now the software is adding devices using de UDP search broadcast
 
 UDP search command is now send to all network adapters
-    
-Whats we need now next:
+
+The software now has PT-BR localization, and PT-BR is the dafault language on new installations:
+New files:
+
+Services/LocalizationService.cs — singleton with string this[string key] indexer; raises PropertyChanged("Item[]") on switch; persists to %LOCALAPPDATA%\ModbusApp\lang.txt
+Services/Strings/EnglishStrings.cs — EN dictionary (~58 keys)
+Services/Strings/PortugueseStrings.cs — PT-BR dictionary (same keys)
+Services/AppLanguageConverter.cs — displays "English" / "Português (BR)" in the ComboBox
+ViewModels/SettingsViewModel.cs — exposes language selector bound to the service
+Views/SettingsView.axaml + .cs — Settings page with language ComboBox
+Modified files:
+
+NavItem → now ObservableObject with stable Key + reactive Title
+MainViewModel → adds Settings nav item, syncs nav titles on language change
+DeviceItemViewModel → IDisposable, subscribes to language changes for StatusText/ModelDisplayName/SlaveIdText/LastSeenText
+All 3 views (DeviceListView, AddDeviceView, DeviceDetailView) → fully localized bindings
+All status-producing ViewModels → use LocalizationService.Instance["key"] and string.Format
+App.axaml.cs / App.axaml → DI registration + DataTemplate for Settings
+
+
+
+
+Whats next?
   - Move the COM port, baud rate, stopbits, parity to a new settings page ** Need to verify if the software is made to work with more than one COM port
-  - Create a string dictionary to translate the software from english to brazillian portuguese and put it on settings page
+
 
   
   

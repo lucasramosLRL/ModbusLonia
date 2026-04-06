@@ -9,6 +9,7 @@ using Modbus.Core.Persistence.Repositories;
 using Modbus.Core.Polling;
 using Modbus.Core.Services;
 using Modbus.Core.Services.Scanning;
+using Modbus.Desktop.Services;
 using Modbus.Desktop.ViewModels;
 using Modbus.Desktop.Views;
 using System;
@@ -73,7 +74,9 @@ public partial class App : Application
                 sp.GetRequiredService<IModbusServiceFactory>(),
                 TimeSpan.FromSeconds(5)));
 
+        services.AddSingleton(_ => LocalizationService.Instance);
         services.AddSingleton<DeviceListViewModel>();
+        services.AddSingleton<SettingsViewModel>();
         services.AddSingleton<MainViewModel>();
     }
 }

@@ -1,6 +1,7 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:Modbus.Desktop.ViewModels"
+             xmlns:svc="using:Modbus.Desktop.Services"
              x:Class="Modbus.Desktop.Views.AddDeviceView"
              x:DataType="vm:AddDeviceViewModel">
 
@@ -8,12 +9,12 @@
 
         <!-- Header -->
         <Grid DockPanel.Dock="Top" ColumnDefinitions="Auto,*" Margin="0,0,0,20">
-            <Button Content="← Back"
+            <Button Content="{Binding [Back], Source={x:Static svc:LocalizationService.Instance}}"
                     Command="{Binding GoBackCommand}"
                     Padding="12,8"
                     VerticalAlignment="Center" />
             <TextBlock Grid.Column="1"
-                       Text="Add Device"
+                       Text="{Binding [AddDeviceTitle], Source={x:Static svc:LocalizationService.Instance}}"
                        FontSize="24"
                        FontWeight="SemiBold"
                        Margin="20,0"
@@ -38,15 +39,15 @@
                         BorderBrush="#1A1A2E"
                         Background="#1A1A2E">
                     <StackPanel Spacing="8">
-                        <TextBlock Text="Transport Type"
+                        <TextBlock Text="{Binding [TransportType], Source={x:Static svc:LocalizationService.Instance}}"
                                    FontSize="13"
                                    FontWeight="SemiBold"
                                    Foreground="#FFFFFF" />
                         <StackPanel Orientation="Horizontal" Spacing="24">
-                            <RadioButton Content="RTU (Serial Port)"
+                            <RadioButton Content="{Binding [RtuOption], Source={x:Static svc:LocalizationService.Instance}}"
                                          IsChecked="{Binding IsRtu, Mode=TwoWay}"
                                          GroupName="Transport" />
-                            <RadioButton Content="TCP (Ethernet)"
+                            <RadioButton Content="{Binding [TcpOption], Source={x:Static svc:LocalizationService.Instance}}"
                                          IsChecked="{Binding IsTcp, Mode=TwoWay}"
                                          GroupName="Transport" />
                         </StackPanel>
@@ -61,7 +62,7 @@
                         BorderBrush="#1A1A2E"
                         Background="#1A1A2E">
                     <StackPanel Spacing="12">
-                        <TextBlock Text="Serial Port Settings"
+                        <TextBlock Text="{Binding [SerialPortSettings], Source={x:Static svc:LocalizationService.Instance}}"
                                    FontSize="13"
                                    FontWeight="SemiBold"
                                    Foreground="#FFFFFF" />
@@ -69,7 +70,8 @@
 
                             <!-- Row 0 -->
                             <StackPanel Grid.Row="0" Grid.Column="0" Spacing="4">
-                                <TextBlock Text="COM Port" FontSize="11" Opacity="0.55" Foreground="#1F1F1F" />
+                                <TextBlock Text="{Binding [ComPort], Source={x:Static svc:LocalizationService.Instance}}"
+                                           FontSize="11" Opacity="0.55" Foreground="#1F1F1F" />
                                 <Grid ColumnDefinitions="*,Auto">
                                     <ComboBox Grid.Column="0"
                                               ItemsSource="{Binding AvailablePorts}"
@@ -80,18 +82,20 @@
                                             Command="{Binding RefreshPortsCommand}"
                                             Padding="8,4"
                                             Margin="4,0,0,0"
-                                            ToolTip.Tip="Refresh port list"
+                                            ToolTip.Tip="{Binding [RefreshPortList], Source={x:Static svc:LocalizationService.Instance}}"
                                             VerticalAlignment="Center" />
                                 </Grid>
                             </StackPanel>
                             <StackPanel Grid.Row="0" Grid.Column="1" Spacing="4" Margin="12,0,0,0">
-                                <TextBlock Text="Baud Rate" FontSize="11" Opacity="0.55" Foreground="#1F1F1F" />
+                                <TextBlock Text="{Binding [BaudRate], Source={x:Static svc:LocalizationService.Instance}}"
+                                           FontSize="11" Opacity="0.55" Foreground="#1F1F1F" />
                                 <ComboBox ItemsSource="{Binding AvailableBaudRates}"
                                           SelectedItem="{Binding SelectedBaudRate}"
                                           HorizontalAlignment="Stretch" />
                             </StackPanel>
                             <StackPanel Grid.Row="0" Grid.Column="2" Spacing="4" Margin="12,0,0,0">
-                                <TextBlock Text="Data Bits" FontSize="11" Opacity="0.55" Foreground="#1F1F1F" />
+                                <TextBlock Text="{Binding [DataBits], Source={x:Static svc:LocalizationService.Instance}}"
+                                           FontSize="11" Opacity="0.55" Foreground="#1F1F1F" />
                                 <NumericUpDown Value="{Binding DataBits}"
                                                Minimum="7" Maximum="8" Increment="1"
                                                FormatString="0"
@@ -100,19 +104,22 @@
 
                             <!-- Row 1 -->
                             <StackPanel Grid.Row="1" Grid.Column="0" Spacing="4" Margin="0,12,0,0">
-                                <TextBlock Text="Parity" FontSize="11" Opacity="0.55" Foreground="#1F1F1F" />
+                                <TextBlock Text="{Binding [Parity], Source={x:Static svc:LocalizationService.Instance}}"
+                                           FontSize="11" Opacity="0.55" Foreground="#1F1F1F" />
                                 <ComboBox ItemsSource="{Binding AvailableParities}"
                                           SelectedItem="{Binding SelectedParity}"
                                           HorizontalAlignment="Stretch" />
                             </StackPanel>
                             <StackPanel Grid.Row="1" Grid.Column="1" Spacing="4" Margin="12,12,0,0">
-                                <TextBlock Text="Stop Bits" FontSize="11" Opacity="0.55" Foreground="#1F1F1F" />
+                                <TextBlock Text="{Binding [StopBits], Source={x:Static svc:LocalizationService.Instance}}"
+                                           FontSize="11" Opacity="0.55" Foreground="#1F1F1F" />
                                 <ComboBox ItemsSource="{Binding AvailableStopBits}"
                                           SelectedItem="{Binding SelectedStopBits}"
                                           HorizontalAlignment="Stretch" />
                             </StackPanel>
                             <StackPanel Grid.Row="1" Grid.Column="2" Spacing="4" Margin="12,12,0,0">
-                                <TextBlock Text="Address Range" FontSize="11" Opacity="0.55" Foreground="#1F1F1F" />
+                                <TextBlock Text="{Binding [AddressRange], Source={x:Static svc:LocalizationService.Instance}}"
+                                           FontSize="11" Opacity="0.55" Foreground="#1F1F1F" />
                                 <StackPanel Orientation="Horizontal" Spacing="6">
                                     <NumericUpDown Value="{Binding StartAddress}"
                                                    Minimum="1" Maximum="247" Increment="1"
@@ -138,11 +145,11 @@
                         BorderBrush="#1A1A2E"
                         Background="#1A1A2E">
                     <StackPanel Spacing="12">
-                        <TextBlock Text="Network Settings"
+                        <TextBlock Text="{Binding [NetworkSettings], Source={x:Static svc:LocalizationService.Instance}}"
                                    FontSize="13"
                                    FontWeight="SemiBold"
                                    Foreground="#FFFFFF" />
-                        <TextBlock Text="Discovery uses UDP broadcast (255.255.255.255). Devices on the local network will respond automatically."
+                        <TextBlock Text="{Binding [NetworkSettingsHint], Source={x:Static svc:LocalizationService.Instance}}"
                                    FontSize="12"
                                    Opacity="0.6"
                                    TextWrapping="Wrap" />
@@ -152,10 +159,10 @@
                 <!-- Scan action row -->
                 <StackPanel Spacing="8">
                     <StackPanel Orientation="Horizontal" Spacing="8">
-                        <Button Content="Search Network"
+                        <Button Content="{Binding [SearchNetwork], Source={x:Static svc:LocalizationService.Instance}}"
                                 Command="{Binding ScanCommand}"
                                 Padding="16,8" />
-                        <Button Content="Cancel"
+                        <Button Content="{Binding [Cancel], Source={x:Static svc:LocalizationService.Instance}}"
                                 Command="{Binding CancelScanCommand}"
                                 Padding="12,8" />
                         <TextBlock Text="{Binding ScanStatus}"
@@ -171,10 +178,10 @@
 
                 <!-- Scan results -->
                 <StackPanel Spacing="8">
-                    <TextBlock Text="Found Devices"
+                    <TextBlock Text="{Binding [FoundDevices], Source={x:Static svc:LocalizationService.Instance}}"
                                FontSize="14"
                                FontWeight="SemiBold" />
-                    <TextBlock Text="No devices found yet. Run a scan or fill in device details manually below."
+                    <TextBlock Text="{Binding [NoFoundDevicesYet], Source={x:Static svc:LocalizationService.Instance}}"
                                IsVisible="{Binding !ScanResults.Count}"
                                Opacity="0.5"
                                FontSize="13" />
@@ -223,18 +230,20 @@
                         BorderBrush="#1A1A2E"
                         Background="#1A1A2E">
                     <StackPanel Spacing="12">
-                        <TextBlock Text="Device Details"
+                        <TextBlock Text="{Binding [DeviceDetails], Source={x:Static svc:LocalizationService.Instance}}"
                                    FontSize="13"
                                    FontWeight="SemiBold"
                                    Foreground="#FFFFFF" />
                         <Grid ColumnDefinitions="*,200,200" RowDefinitions="Auto">
                             <StackPanel Grid.Column="0" Spacing="4">
-                                <TextBlock Text="Name" FontSize="11" Opacity="0.55" Foreground="#1F1F1F" />
+                                <TextBlock Text="{Binding [Name], Source={x:Static svc:LocalizationService.Instance}}"
+                                           FontSize="11" Opacity="0.55" Foreground="#1F1F1F" />
                                 <TextBox Text="{Binding DeviceName}"
-                                         Watermark="e.g. KS-3000 #00012345" />
+                                         Watermark="{Binding [DeviceNameWatermark], Source={x:Static svc:LocalizationService.Instance}}" />
                             </StackPanel>
                             <StackPanel Grid.Column="1" Spacing="4" Margin="12,0,0,0">
-                                <TextBlock Text="Address (1–247)" FontSize="11" Opacity="0.55" Foreground="#1F1F1F" />
+                                <TextBlock Text="{Binding [Address], Source={x:Static svc:LocalizationService.Instance}}"
+                                           FontSize="11" Opacity="0.55" Foreground="#1F1F1F" />
                                 <NumericUpDown Value="{Binding SlaveId}"
                                                Minimum="1" Maximum="247" Increment="1"
                                                FormatString="0"
@@ -242,9 +251,10 @@
                             </StackPanel>
                             <StackPanel Grid.Column="2" Spacing="4" Margin="12,0,0,0"
                                         IsVisible="{Binding IsTcp}">
-                                <TextBlock Text="Device IP" FontSize="11" Opacity="0.55" Foreground="#1F1F1F" />
+                                <TextBlock Text="{Binding [DeviceIp], Source={x:Static svc:LocalizationService.Instance}}"
+                                           FontSize="11" Opacity="0.55" Foreground="#1F1F1F" />
                                 <TextBox Text="{Binding DeviceIp}"
-                                         Watermark="e.g. 192.168.1.42" />
+                                         Watermark="{Binding [DeviceIpWatermark], Source={x:Static svc:LocalizationService.Instance}}" />
                             </StackPanel>
                         </Grid>
 
@@ -258,7 +268,7 @@
 
                 <!-- Save row -->
                 <StackPanel Orientation="Horizontal" Spacing="8" Margin="0,0,0,20">
-                    <Button Content="Save Device"
+                    <Button Content="{Binding [SaveDevice], Source={x:Static svc:LocalizationService.Instance}}"
                             Command="{Binding SaveCommand}"
                             Padding="20,10"
                             FontWeight="Medium" />

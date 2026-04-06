@@ -1,6 +1,7 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="using:Modbus.Desktop.ViewModels"
+        xmlns:svc="using:Modbus.Desktop.Services"
         x:Class="Modbus.Desktop.Views.MainWindow"
         x:DataType="vm:MainViewModel"
         Title="ModbusApp"
@@ -20,7 +21,7 @@
                                    Foreground="White"
                                    FontSize="18"
                                    FontWeight="SemiBold" />
-                        <TextBlock Text="Device Monitor"
+                        <TextBlock Text="{Binding [AppSubtitle], Source={x:Static svc:LocalizationService.Instance}}"
                                    Foreground="#7070A0"
                                    FontSize="11" />
                     </StackPanel>

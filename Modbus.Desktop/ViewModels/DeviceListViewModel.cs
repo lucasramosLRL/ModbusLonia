@@ -49,6 +49,7 @@ public partial class DeviceListViewModel : ObservableObject
     internal async Task LoadDevicesAsync()
     {
         IsLoading = true;
+        foreach (var d in Devices) d.Dispose();
         Devices.Clear();
 
         try
@@ -77,6 +78,7 @@ public partial class DeviceListViewModel : ObservableObject
     {
         _pollingEngine.RemoveDevice(device.Id);
         await _deviceRepository.DeleteAsync(device.Id);
+        device.Dispose();
         Devices.Remove(device);
     }
 

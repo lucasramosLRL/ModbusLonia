@@ -1,5 +1,6 @@
 using Modbus.Core.Domain.Entities;
 using Modbus.Core.Domain.Enums;
+using Modbus.Desktop.Services;
 using System;
 
 namespace Modbus.Desktop.ViewModels;
@@ -16,7 +17,7 @@ public class RegisterValueViewModel
 
     public RegisterValueViewModel(RegisterValue value, RegisterDefinition? definition)
     {
-        Name = definition?.Name ?? $"Register {value.Address}";
+        Name = definition?.Name ?? string.Format(LocalizationService.Instance["RegisterFallback"], value.Address);
         Address = value.Address;
         RegisterType = value.RegisterType;
         Value = value.Value;

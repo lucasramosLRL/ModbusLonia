@@ -8,6 +8,7 @@ using Modbus.Core.Services.Scanning;
 using System;
 using System.Collections.ObjectModel;
 using Modbus.Desktop.Infrastructure;
+using Modbus.Desktop.Services;
 using System.Threading;
 using System.Threading.Tasks;
 using Parity = Modbus.Core.Domain.Enums.Parity;
@@ -102,7 +103,7 @@ public partial class AddDeviceViewModel : ObservableObject
     private bool _isScanning;
 
     [ObservableProperty]
-    private string _scanStatus = "Ready";
+    private string _scanStatus = LocalizationService.Instance["Ready"];
 
     [ObservableProperty]
     private int _scanProgress;
@@ -184,7 +185,7 @@ public partial class AddDeviceViewModel : ObservableObject
             ScanProgress = p.Current;
             ScanTotal = p.Total;
             FoundCount = p.Found;
-            ScanStatus = $"Scanning {p.CurrentLabel} ({p.Current}/{p.Total})";
+            ScanStatus = string.Format(LocalizationService.Instance["ScanningProgress"], p.CurrentLabel, p.Current, p.Total);
         });
 
         try
@@ -193,7 +194,7 @@ public partial class AddDeviceViewModel : ObservableObject
             {
                 if (string.IsNullOrEmpty(SelectedPort))
                 {
-                    ScanStatus = "Select a COM port first.";
+                    ScanStatus = LocalizationService.Instance["SelectComPortFirst"];
                     return;
                 }
 
@@ -231,17 +232,18 @@ public partial class AddDeviceViewModel : ObservableObject
                 }
             }
 
+            var loc = LocalizationService.Instance;
             ScanStatus = ScanResults.Count > 0
-                ? $"Done — {ScanResults.Count} device(s) found."
-                : "Scan complete. No devices responded.";
+                ? string.Format(loc["ScanDone"], ScanResults.Count)
+                : loc["ScanNoResponse"];
         }
         catch (OperationCanceledException)
         {
-            ScanStatus = "Scan cancelled.";
+            ScanStatus = LocalizationService.Instance["ScanCancelled"];
         }
         catch (Exception ex)
         {
-            ScanStatus = $"Error: {ex.Message}";
+            ScanStatus = string.Format(LocalizationService.Instance["ErrorPrefix"], ex.Message);
         }
         finally
         {
@@ -272,7 +274,7 @@ public partial class AddDeviceViewModel : ObservableObject
             if (serialNumber.HasValue &&
                 await _deviceRepository.ExistsBySerialNumberAsync(serialNumber.Value))
             {
-                SaveError = $"A device with serial number {serialNumber.Value:D8} already exists.";
+                SaveError = string.Format(LocalizationService.Instance["DuplicateSerial"], serialNumber.Value);
                 return;
             }
 
@@ -322,7 +324,7 @@ public partial class AddDeviceViewModel : ObservableObject
             DeviceName = "";
             SelectedResult = null;
             SaveError = null;
-            ScanStatus = "Device saved. Select another from the list or go back.";
+            ScanStatus = LocalizationService.Instance["DeviceSaved"];
         }
         catch (Exception ex)
         {

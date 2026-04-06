@@ -2,6 +2,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Layout;
 using Avalonia.Media;
+using Modbus.Desktop.Services;
 using Modbus.Desktop.ViewModels;
 
 namespace Modbus.Desktop.Views;
@@ -30,9 +31,10 @@ public partial class DeviceListView : UserControl
     {
         var result = false;
 
+        var loc = LocalizationService.Instance;
         var dialog = new Window
         {
-            Title = "Confirm Delete",
+            Title = loc["ConfirmDelete"],
             Width = 380,
             Height = 160,
             CanResize = false,
@@ -42,7 +44,7 @@ public partial class DeviceListView : UserControl
 
         var confirmBtn = new Button
         {
-            Content = "Delete",
+            Content = loc["Delete"],
             Padding = new Thickness(16, 8),
             Background = new SolidColorBrush(Color.Parse("#C0392B")),
             Foreground = Brushes.White
@@ -51,7 +53,7 @@ public partial class DeviceListView : UserControl
 
         var cancelBtn = new Button
         {
-            Content = "Cancel",
+            Content = loc["Cancel"],
             Padding = new Thickness(16, 8)
         };
         cancelBtn.Click += (_, _) => dialog.Close();
@@ -64,7 +66,7 @@ public partial class DeviceListView : UserControl
             {
                 new TextBlock
                 {
-                    Text = $"Delete \"{deviceName}\"? This action cannot be undone.",
+                    Text = string.Format(loc["ConfirmDeleteMsg"], deviceName),
                     TextWrapping = Avalonia.Media.TextWrapping.Wrap,
                     FontSize = 14
                 },

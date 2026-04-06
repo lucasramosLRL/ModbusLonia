@@ -1,0 +1,40 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Modbus.Desktop.ViewModels"
+             xmlns:svc="using:Modbus.Desktop.Services"
+             x:Class="Modbus.Desktop.Views.SettingsView"
+             x:DataType="vm:SettingsViewModel">
+
+    <StackPanel Margin="28,20" Spacing="24">
+
+        <TextBlock Text="{Binding [SettingsTitle], Source={x:Static svc:LocalizationService.Instance}}"
+                   FontSize="26"
+                   FontWeight="SemiBold" />
+
+        <!-- Language selection -->
+        <Border Padding="16"
+                CornerRadius="8"
+                BorderThickness="1"
+                BorderBrush="#1A1A2E"
+                Background="#1A1A2E"
+                Width="320"
+                HorizontalAlignment="Left">
+            <StackPanel Spacing="10">
+                <TextBlock Text="{Binding [Language], Source={x:Static svc:LocalizationService.Instance}}"
+                           FontSize="13"
+                           FontWeight="SemiBold"
+                           Foreground="#FFFFFF" />
+                <ComboBox ItemsSource="{Binding AvailableLanguages}"
+                          SelectedItem="{Binding SelectedLanguage}"
+                          HorizontalAlignment="Stretch">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate DataType="{x:Type svc:AppLanguage}">
+                            <TextBlock Text="{Binding Converter={x:Static svc:AppLanguageConverter.Instance}}" />
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+            </StackPanel>
+        </Border>
+
+    </StackPanel>
+</UserControl>
