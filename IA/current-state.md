@@ -310,8 +310,9 @@ App.axaml.cs / App.axaml → DI registration + DataTemplate for Settings
 
 
 Whats next?
-  - Move the COM port, baud rate, stopbits, parity to a new settings page ** Need to verify if the software is made to work with more than one COM port
-
+  - Create a page to show the energy readings
+  - Do some readings on input registers like Real-time readings, energy, demands...
+  - POC of the mobile version using the same core from the desktop version
 
   
   
