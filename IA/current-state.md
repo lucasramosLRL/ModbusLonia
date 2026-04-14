@@ -307,6 +307,150 @@ All status-producing ViewModels → use LocalizationService.Instance["key"] and 
 App.axaml.cs / App.axaml → DI registration + DataTemplate for Settings
 
 
+** Plan for adding the readings page and read somo input registers **
+
+# Plan: Electrical Readings Page ("Leituras em Tempo Real")
+
+## Context
+
+The user wants to add an "Electrical Readings" page to the device detail view. When opening a device, instead of just showing a raw DataGrid of register values, the view should display a modern tabbed interface with the first tab showing **real-time metering data** (voltages, currents, power, power factor, frequency) in a card-based layout. Data comes from KS-3000 input registers (FC 04) and should update live via the polling engine.
+
+The KS-3000 documentation defines ~30 input registers at addresses 0-65 (all IEEE 32-bit float except serial number which is UInt32). Currently, no register definitions are seeded for the KS-3000 model, so the polling engine only does a heartbeat read.
+
+---
+
+## Implementation Steps
+
+### Step 1: Seed KS-3000 Register Definitions
+
+**File:** `Modbus.Core/Persistence/DeviceModelSeeder.cs`
+
+Extend `SeedAsync` to populate KS-3000 registers if none exist. `GetByNameAsync` already includes registers via `.Include()`, so we can check `existing.Registers.Count == 0`.
+
+Add all ~30 input register definitions:
+- Address 0: NS (UInt32, no unit)
+- Addresses 2-14: Voltages U0, U12, U23, U31, U1, U2, U3 (Float32, V)
+- Address 16: I0 (Float32, A), skip reserved 18-19
+- Addresses 20-24: I1, I2, I3 (Float32, A)
+- Address 26: Freq (Float32, Hz), skip reserved 28-33
+- Addresses 34-40: P0-P3 (Float32, W)
+- Addresses 42-48: Q0-Q3 (Float32, VAr)
+- Addresses 50-56: S0-S3 (Float32, VA)
+- Addresses 58-64: FP0-FP3 (Float32, no unit)
+
+All with: `RegisterType = Input`, `WordOrder = LittleEndian` (KS-3000 uses F2,F1,F0,EXP = CDAB), `ScaleFactor = 1.0`, `IsWritable = false`.
+
+### Step 2: Create `ElectricalReadingViewModel`
+
+**New file:** `Modbus.Desktop/ViewModels/ElectricalReadingViewModel.cs`
+
+Observable item for a single register reading:
+- Properties: `Name` (register code e.g. "U0"), `Description` (localized), `DisplayValue` (formatted with unit), `Unit`, `Value` (double), `Address` (ushort)
+- `Update(double newValue)` method that refreshes `Value` and `DisplayValue`
+
+### Step 3: Create `ReadingGroupViewModel`
+
+**New file:** `Modbus.Desktop/ViewModels/ReadingGroupViewModel.cs`
+
+Groups readings by category:
+- Properties: `GroupName` (localized), `Readings` (ObservableCollection of ElectricalReadingViewModel)
+- 7 groups: Voltages, Currents, Frequency, Active Power, Reactive Power, Apparent Power, Power Factor
+
+### Step 4: Modify `DeviceDetailViewModel`
+
+**File:** `Modbus.Desktop/ViewModels/DeviceDetailViewModel.cs`
+
+- Add `IPollingEngine` constructor parameter
+- Subscribe to `RegisterValuesUpdated` event (filter by device ID)
+- Add `ObservableCollection<ReadingGroupViewModel> ReadingGroups` property
+- Add `int SelectedTabIndex` observable property
+- Build reading groups from `Device.Device.DeviceModel.Registers`, mapping name prefixes to groups
+- On polling event: marshal to UI thread, find matching `ElectricalReadingViewModel` by address, call `Update()`
+- Implement `IDisposable` to unsubscribe from polling event
+- Call `Dispose()` in `GoBack()`
+
+### Step 5: Update `DeviceListViewModel`
+
+**File:** `Modbus.Desktop/ViewModels/DeviceListViewModel.cs`
+
+Pass `_pollingEngine` when creating DeviceDetailViewModel (line 91):
+```csharp
+var detail = new DeviceDetailViewModel(device, _registerValueRepository, _pollingEngine, this);
+```
+
+### Step 6: Redesign `DeviceDetailView.axaml`
+
+**File:** `Modbus.Desktop/Views/DeviceDetailView.axaml`
+
+Keep header + loading bar + device info card. Replace the register DataGrid section with a `TabControl`:
+
+- **Tab 1: "Leituras em Tempo Real"** — ScrollViewer with ItemsControl bound to `ReadingGroups`. Each group rendered as a dark card (`#252540`, CornerRadius 8) with group name header and a `UniformGrid` (Columns=4) of reading items. Each reading item shows the description (small, dim) above the value (large font) with unit.
+
+- **Tab 2: "Registradores"** — The existing raw DataGrid (moved here for reference/debug use)
+
+### Step 7: Add Localization Keys
+
+**Files:** `Modbus.Desktop/Services/Strings/EnglishStrings.cs`, `PortugueseStrings.cs`
+
+Keys needed:
+- Tab names: `TabRealTime`, `TabRawRegisters`
+- Group names: `GroupVoltages`, `GroupCurrents`, `GroupFrequency`, `GroupActivePower`, `GroupReactivePower`, `GroupApparentPower`, `GroupPowerFactor`
+- Empty state: `NoLiveData`
+- Register descriptions: `RegU0`, `RegU12`, `RegU23`, `RegU31`, `RegU1`-`RegU3`, `RegI0`-`RegI3`, `RegFreq`, `RegP0`-`RegP3`, `RegQ0`-`RegQ3`, `RegS0`-`RegS3`, `RegFP0`-`RegFP3`
+
+---
+
+## Key Files
+
+| File | Action |
+|------|--------|
+| `Modbus.Core/Persistence/DeviceModelSeeder.cs` | Modify - add register definitions |
+| `Modbus.Desktop/ViewModels/ElectricalReadingViewModel.cs` | Create |
+| `Modbus.Desktop/ViewModels/ReadingGroupViewModel.cs` | Create |
+| `Modbus.Desktop/ViewModels/DeviceDetailViewModel.cs` | Modify - polling subscription, tabs, groups |
+| `Modbus.Desktop/ViewModels/DeviceListViewModel.cs` | Modify - pass polling engine |
+| `Modbus.Desktop/Views/DeviceDetailView.axaml` | Modify - tabbed layout with cards |
+| `Modbus.Desktop/Services/Strings/EnglishStrings.cs` | Modify - add keys |
+| `Modbus.Desktop/Services/Strings/PortugueseStrings.cs` | Modify - add keys |
+
+## Reuse
+
+- `RegisterDecoder.Decode()` — already handles Float32 + LittleEndian word order
+- `PollingEngine.GroupRegisters()` — already groups contiguous registers efficiently (maxGap=5 handles the gaps in KS-3000 register map)
+- `DeviceModelRepository.GetByNameAsync()` — already includes registers
+- `Dispatcher.UIThread.InvokeAsync()` pattern — same as DeviceListViewModel for thread-safe UI updates
+
+## Verification
+
+1. **Delete** `modbusapp.db` (force re-seed with register definitions)
+2. **Launch app** — KS-3000 model should now have ~30 register definitions
+3. **Open a KS-3000 device** — should see the tabbed detail view
+4. **Real-time tab** — should show 7 grouped cards with readings updating every polling cycle (5s)
+5. **Raw Registers tab** — should show the existing DataGrid with all register values
+6. **Switch language** — all labels, group names, and register descriptions should update
+7. **Navigate back** — verify no memory leak (polling event unsubscribed)
+
+## Note on Word Order
+
+The KS-3000 doc says "F2,F1,F0,EXP" which is LittleEndian word order (low word at lower address). If real device testing shows wrong values, change `WordOrder` to `BigEndian` in the seeder — that's the only change needed.
+
+All done. Build passes with 0 errors. Here's a summary of what was implemented:
+
+Modbus.Core (3 files)
+
+DeviceModelSeeder.cs — Seeds 29 KS-3000 input register definitions (voltages, currents, frequency, active/reactive/apparent power, power factor) with Float32 + LittleEndian word order
+IDeviceModelRepository.cs — Added UpdateAsync method
+DeviceModelRepository.cs — Implemented UpdateAsync
+Modbus.Desktop (7 files)
+
+ElectricalReadingViewModel.cs — New. Observable item for a single live reading with Update() method
+ReadingGroupViewModel.cs — New. Groups readings by category (localized group name)
+DeviceDetailViewModel.cs — Subscribes to polling engine events for live updates, builds 7 reading groups from register definitions, implements IDisposable
+DeviceListViewModel.cs — Passes _pollingEngine to DeviceDetailViewModel
+DeviceDetailView.axaml — Tabbed layout: "Leituras em Tempo Real" tab with card-based grouped readings + "Registradores Brutos" tab with existing DataGrid
+EnglishStrings.cs — 40+ new localization keys
+PortugueseStrings.cs — Matching PT-BR keys
+
 
 
 Whats next?
