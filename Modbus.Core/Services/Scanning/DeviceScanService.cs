@@ -202,7 +202,7 @@ public class DeviceScanService : IDeviceScanService
 
                 string suggestedName = (modelName, udpInfo.SerialNumber) switch
                 {
-                    (not null, not null) => $"{modelName} #{udpInfo.SerialNumber.Value:D8}",
+                    (not null, not null) => $"{modelName} #{udpInfo.SerialNumber.Value:D7}",
                     (not null, null)     => $"{modelName} @ {ip}",
                     _                    => $"Device @ {ip}"
                 };
@@ -324,7 +324,7 @@ public class DeviceScanService : IDeviceScanService
 
         string suggestedName = (modelName, serialNumber) switch
         {
-            (not null, not null) => $"{modelName} #{serialNumber.Value:D8}",
+            (not null, not null) => $"{modelName} #{serialNumber.Value:D7}",
             (not null, null)     => $"{modelName} (Slave {slaveId})",
             _                    => $"Device 0x{slaveId:X2}"
         };
