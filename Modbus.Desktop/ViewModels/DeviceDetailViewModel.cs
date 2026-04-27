@@ -17,7 +17,7 @@ public partial class DeviceDetailViewModel : ObservableObject, IDisposable
 {
     private readonly IRegisterValueRepository _registerValueRepository;
     private readonly IPollingEngine _pollingEngine;
-    private readonly DeviceListViewModel _parent;
+    private readonly Action _onGoBack;
     private readonly Dictionary<ushort, ElectricalReadingViewModel> _readingsByAddress = new();
 
     public DeviceItemViewModel Device { get; }
@@ -35,12 +35,12 @@ public partial class DeviceDetailViewModel : ObservableObject, IDisposable
         DeviceItemViewModel device,
         IRegisterValueRepository registerValueRepository,
         IPollingEngine pollingEngine,
-        DeviceListViewModel parent)
+        Action onGoBack)
     {
         Device = device;
         _registerValueRepository = registerValueRepository;
         _pollingEngine = pollingEngine;
-        _parent = parent;
+        _onGoBack = onGoBack;
 
         BuildReadingGroups();
 
@@ -133,7 +133,7 @@ public partial class DeviceDetailViewModel : ObservableObject, IDisposable
     private void GoBack()
     {
         Dispose();
-        _parent.NavigateBack();
+        _onGoBack();
     }
 
     public void Dispose()

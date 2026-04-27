@@ -123,6 +123,14 @@ internal static class PortugueseStrings
         ["RegFP2"]               = "Linha 2",
         ["RegFP3"]               = "Linha 3",
 
+        // DeviceHubView
+        ["HubRealTimeReadings"]      = "Leitura em Tempo Real",
+        ["HubRealTimeReadingsDesc"]  = "Tensões, correntes, potências e frequência lidos diretamente do medidor.",
+        ["HubMassMemory"]            = "Memória de Massa",
+        ["HubMassMemoryDesc"]        = "Histórico de medições armazenado internamente no medidor.",
+        ["HubConfigure"]             = "Configurar",
+        ["HubConfigureDesc"]         = "Altere parâmetros e configurações do medidor via escrita de registradores.",
+
         // DeviceItemViewModel
         ["Connected"]            = "Conectado",
         ["Disconnected"]         = "Desconectado",

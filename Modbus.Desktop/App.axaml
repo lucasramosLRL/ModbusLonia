@@ -13,6 +13,9 @@
         <DataTemplate DataType="{x:Type vm:DeviceListViewModel}">
             <views:DeviceListView />
         </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:DeviceHubViewModel}">
+            <views:DeviceHubView />
+        </DataTemplate>
         <DataTemplate DataType="{x:Type vm:DeviceDetailViewModel}">
             <views:DeviceDetailView />
         </DataTemplate>

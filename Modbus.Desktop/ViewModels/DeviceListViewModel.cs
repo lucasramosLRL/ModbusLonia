@@ -88,9 +88,9 @@ public partial class DeviceListViewModel : ObservableObject
     [RelayCommand]
     private void OpenDeviceDetail(DeviceItemViewModel device)
     {
-        var detail = new DeviceDetailViewModel(device, _registerValueRepository, _pollingEngine, this);
-        _ = detail.LoadValuesAsync();
-        NavigationRequested?.Invoke(this, detail);
+        var hub = new DeviceHubViewModel(device, _registerValueRepository, _pollingEngine, this);
+        hub.NavigationRequested += (_, vm) => NavigationRequested?.Invoke(this, vm);
+        NavigationRequested?.Invoke(this, hub);
     }
 
     [RelayCommand]

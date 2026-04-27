@@ -123,6 +123,14 @@ internal static class EnglishStrings
         ["RegFP2"]               = "Line 2",
         ["RegFP3"]               = "Line 3",
 
+        // DeviceHubView
+        ["HubRealTimeReadings"]      = "Real-Time Readings",
+        ["HubRealTimeReadingsDesc"]  = "Voltages, currents, power and frequency read directly from the meter.",
+        ["HubMassMemory"]            = "Mass Memory",
+        ["HubMassMemoryDesc"]        = "Measurement history stored internally in the meter.",
+        ["HubConfigure"]             = "Configure",
+        ["HubConfigureDesc"]         = "Change meter parameters and settings by writing to registers.",
+
         // DeviceItemViewModel
         ["Connected"]            = "Connected",
         ["Disconnected"]         = "Disconnected",
