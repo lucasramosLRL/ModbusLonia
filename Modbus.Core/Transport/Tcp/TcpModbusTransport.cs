@@ -16,9 +16,20 @@ public class TcpModbusTransport : IModbusTransport
 
     public async Task ConnectAsync(CancellationToken cancellationToken = default)
     {
-        _client = new TcpClient();
-        await _client.ConnectAsync(_config.IpAddress, _config.Port, cancellationToken);
-        _stream = _client.GetStream();
+        _stream = null;
+        var client = new TcpClient();
+        try
+        {
+            await client.ConnectAsync(_config.IpAddress, _config.Port, cancellationToken);
+            _client = client;
+            _stream = _client.GetStream();
+        }
+        catch
+        {
+            client.Dispose();
+            _client = null;
+            throw;
+        }
     }
 
     public Task DisconnectAsync()

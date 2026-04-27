@@ -7,10 +7,7 @@ using Modbus.Core.Domain.ValueObjects;
 using Modbus.Core.Services.Scanning;
 using Modbus.Desktop.Infrastructure;
 using Modbus.Desktop.Services;
-using System;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using TransportType = Modbus.Core.Domain.Enums.TransportType;
 
@@ -52,6 +49,8 @@ public partial class AddDeviceViewModel : ObservableObject
     {
         if (value && SelectedTransport != TransportType.Tcp)
             SelectedTransport = TransportType.Tcp;
+        if (value)
+            SlaveId = 255;
     }
 
     // ── RTU address range ─────────────────────────────────────────────────────
@@ -90,7 +89,7 @@ public partial class AddDeviceViewModel : ObservableObject
     [ObservableProperty]
     private int _foundCount;
 
-    public ObservableCollection<ScanResultViewModel> ScanResults { get; } = new();
+    public ObservableCollection<ScanResultViewModel> ScanResults { get; } = [];
 
     // ── Selected result / form ────────────────────────────────────────────────
 
@@ -101,7 +100,8 @@ public partial class AddDeviceViewModel : ObservableObject
     {
         if (value is null) return;
         DeviceName = value.Result.SuggestedName;
-        SlaveId = value.Result.SlaveId;
+        if (!IsTcp)
+            SlaveId = value.Result.SlaveId;
         if (value.Result.Tcp is not null)
             DeviceIp = value.Result.Tcp.IpAddress;
     }

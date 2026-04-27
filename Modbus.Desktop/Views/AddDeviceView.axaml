@@ -183,7 +183,8 @@
                                                Text="{Binding SlaveIdText}"
                                                FontSize="12"
                                                Opacity="0.65"
-                                               VerticalAlignment="Center" />
+                                               VerticalAlignment="Center"
+                                               IsVisible="{Binding #ScanResultsList.DataContext.IsRtu, FallbackValue=True}" />
                                     <TextBlock Grid.Column="3"
                                                Text="{Binding SerialText}"
                                                FontSize="12"
@@ -218,7 +219,8 @@
                                 <TextBox Text="{Binding DeviceName}"
                                          Watermark="{Binding [DeviceNameWatermark], Source={x:Static svc:LocalizationService.Instance}}" />
                             </StackPanel>
-                            <StackPanel Grid.Column="1" Spacing="4" Margin="12,0,0,0">
+                            <StackPanel Grid.Column="1" Spacing="4" Margin="12,0,0,0"
+                                        IsVisible="{Binding IsRtu}">
                                 <TextBlock Text="{Binding [Address], Source={x:Static svc:LocalizationService.Instance}}"
                                            FontSize="11" Opacity="0.55" Foreground="#1F1F1F" />
                                 <NumericUpDown Value="{Binding SlaveId}"

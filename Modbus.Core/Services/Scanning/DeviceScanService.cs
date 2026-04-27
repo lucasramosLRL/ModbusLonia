@@ -172,11 +172,12 @@ public class DeviceScanService : IDeviceScanService
                 CurrentLabel = ip
             });
 
+            const byte tcpUnitId = 255;
             var tcpConfig = new TcpConfig { IpAddress = ip, Port = ModbusTcpPort };
             var tempDevice = new ModbusDevice
             {
                 Name = "scan-probe",
-                SlaveId = 1,
+                SlaveId = tcpUnitId,
                 TransportType = TransportType.Tcp,
                 Tcp = tcpConfig
             };
@@ -189,9 +190,9 @@ public class DeviceScanService : IDeviceScanService
                 perIpCts.CancelAfter(TimeSpan.FromMilliseconds(1500));
 
                 await service.ConnectAsync(perIpCts.Token);
-                var slaveIdData = await service.ReportSlaveIdAsync(1, perIpCts.Token);
-                var serialNumber = await TryReadSerialNumberAsync(service, 1, cancellationToken);
-                result = BuildResult(1, slaveIdData.RawData, serialNumber, tcpConfig, null);
+                var slaveIdData = await service.ReportSlaveIdAsync(tcpUnitId, perIpCts.Token);
+                var serialNumber = await TryReadSerialNumberAsync(service, tcpUnitId, cancellationToken);
+                result = BuildResult(tcpUnitId, slaveIdData.RawData, serialNumber, tcpConfig, null);
             }
             catch (Exception)
             {
@@ -209,7 +210,7 @@ public class DeviceScanService : IDeviceScanService
 
                 result = new DeviceScanResult
                 {
-                    SlaveId = 1,
+                    SlaveId = tcpUnitId,
                     DeviceCode = udpInfo.DeviceCode,
                     ModelName = modelName,
                     SerialNumber = udpInfo.SerialNumber,
