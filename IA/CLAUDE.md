@@ -36,12 +36,6 @@ DeviceListView → [Open] → DeviceHubView → [Leitura] → DeviceDetailView
 Navigation is driven by `MainViewModel.CurrentPage`. All VMs fire `NavigationRequested` events
 that bubble up through `DeviceListViewModel` to `MainViewModel`.
 
-### Pending / future features
-- Mass memory readings
-- Register write / configure screen
-- Mobile app (MAUI)
-- SQPF configuration UI (reading is implemented, writing is not)
-
 ### Test coverage (Phases 1-2 complete)
 - `Modbus.Core.Tests` project — xUnit + FluentAssertions + NSubstitute
 - 97 tests passing — covers RegisterDecoder, Crc16, RTU/TCP frame builders and parsers
@@ -259,3 +253,13 @@ Modbus.Core.Tests/
 
 ### Bugs caught by the test suite
 - **`ModbusProtocolException` format string** — `$"...0x{functionCode:X2}..."` raised `FormatException` because `:X2` is invalid for enum types (only `G/g/X/x/F/f/D/d` accepted, no width specifier). Fixed by casting to `byte` before formatting: `0x{(byte)functionCode:X2}`. Production code path was never exercised because real devices hadn't returned error responses in this code path until tests forced it.
+
+
+### Pending / future features - Attention! Keep it in the end of the file
+- Manual adding RTU or TCP device should try to connect using the address/IP informed by the user, get the serial number and validate it, not instantly save it on the BD without any verification. The user should be prompt if the device was successfully added or the software could not connect with it
+- Create a theme/style file or something where the software colors are all defined, making it easier to modify later, now all the colors are hardcoded on the multiple axaml files
+- The software should open centered on the monitor
+- Investigate if its necessary to prompt the user to reset the software when the language is changed, it seens like some texts won't change until a complete restart
+- Register write / configure screen / SQPF configuration UI (reading is implemented, writing is not)
+- Mobile app (MAUI) connected to the same core as the desktop version with the same functions and styling
+- Mass memory readings
