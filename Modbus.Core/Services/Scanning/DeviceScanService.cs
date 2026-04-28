@@ -55,7 +55,7 @@ public class DeviceScanService : IDeviceScanService
         catch (Exception) { }
         if (probeResult != null) { found++; yield return probeResult; }
 
-        for (byte addr = 1; addr <= 247; addr++)
+        for (byte addr = startAddress; addr <= endAddress; addr++)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
