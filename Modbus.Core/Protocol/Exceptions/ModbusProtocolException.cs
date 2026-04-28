@@ -8,7 +8,7 @@ public class ModbusProtocolException : Exception
     public ModbusExceptionCode ExceptionCode { get; }
 
     public ModbusProtocolException(FunctionCode functionCode, ModbusExceptionCode exceptionCode)
-        : base($"Modbus exception on FC 0x{functionCode:X2}: {exceptionCode} (0x{(byte)exceptionCode:X2})")
+        : base($"Modbus exception on FC 0x{(byte)functionCode:X2}: {exceptionCode} (0x{(byte)exceptionCode:X2})")
     {
         FunctionCode = functionCode;
         ExceptionCode = exceptionCode;

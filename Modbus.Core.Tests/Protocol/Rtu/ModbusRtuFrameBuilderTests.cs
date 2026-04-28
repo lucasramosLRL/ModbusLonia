@@ -1,0 +1,136 @@
+using System.Buffers.Binary;
+using FluentAssertions;
+using Modbus.Core.Protocol.Enums;
+using Modbus.Core.Protocol.Rtu;
+
+namespace Modbus.Core.Tests.Protocol.Rtu;
+
+public class ModbusRtuFrameBuilderTests
+{
+    private readonly ModbusRtuFrameBuilder _builder = new();
+
+    // ── ReadRegisters (FC03 / FC04) ──────────────────────────────────────────
+
+    [Fact]
+    public void ReadRegisters_FC03_BuildsCorrect8ByteFrame()
+    {
+        var frame = _builder.ReadRegisters(1, FunctionCode.ReadHoldingRegisters, 0, 10);
+
+        frame.Should().HaveCount(8);
+        frame[0].Should().Be(1, "slave ID");
+        frame[1].Should().Be(0x03, "function code FC03");
+        BinaryPrimitives.ReadUInt16BigEndian(frame.AsSpan(2)).Should().Be(0, "start address");
+        BinaryPrimitives.ReadUInt16BigEndian(frame.AsSpan(4)).Should().Be(10, "quantity");
+        Crc16.Validate(frame).Should().BeTrue("CRC must be valid");
+    }
+
+    [Fact]
+    public void ReadRegisters_FC04_BuildsCorrect8ByteFrame()
+    {
+        var frame = _builder.ReadRegisters(1, FunctionCode.ReadInputRegisters, 100, 5);
+
+        frame.Should().HaveCount(8);
+        frame[1].Should().Be(0x04, "function code FC04");
+        BinaryPrimitives.ReadUInt16BigEndian(frame.AsSpan(2)).Should().Be(100, "start address");
+        BinaryPrimitives.ReadUInt16BigEndian(frame.AsSpan(4)).Should().Be(5, "quantity");
+        Crc16.Validate(frame).Should().BeTrue();
+    }
+
+    [Fact]
+    public void ReadRegisters_MaxSlaveId247_SetsCorrectByte()
+    {
+        var frame = _builder.ReadRegisters(247, FunctionCode.ReadHoldingRegisters, 0, 1);
+        frame[0].Should().Be(247);
+        Crc16.Validate(frame).Should().BeTrue();
+    }
+
+    [Fact]
+    public void ReadRegisters_MaxAddress_SetsCorrectBytes()
+    {
+        var frame = _builder.ReadRegisters(1, FunctionCode.ReadHoldingRegisters, 0xFFFF, 125);
+
+        BinaryPrimitives.ReadUInt16BigEndian(frame.AsSpan(2)).Should().Be(0xFFFF);
+        BinaryPrimitives.ReadUInt16BigEndian(frame.AsSpan(4)).Should().Be(125);
+        Crc16.Validate(frame).Should().BeTrue();
+    }
+
+    // ── WriteSingleRegister (FC06) ───────────────────────────────────────────
+
+    [Fact]
+    public void WriteSingleRegister_BuildsCorrect8ByteFrame()
+    {
+        var frame = _builder.WriteSingleRegister(1, 100, 0x1234);
+
+        frame.Should().HaveCount(8);
+        frame[0].Should().Be(1);
+        frame[1].Should().Be(0x06, "function code FC06");
+        BinaryPrimitives.ReadUInt16BigEndian(frame.AsSpan(2)).Should().Be(100, "address");
+        BinaryPrimitives.ReadUInt16BigEndian(frame.AsSpan(4)).Should().Be(0x1234, "value");
+        Crc16.Validate(frame).Should().BeTrue();
+    }
+
+    [Fact]
+    public void WriteSingleRegister_ZeroValue_EncodesCorrectly()
+    {
+        var frame = _builder.WriteSingleRegister(1, 0, 0);
+
+        BinaryPrimitives.ReadUInt16BigEndian(frame.AsSpan(2)).Should().Be(0);
+        BinaryPrimitives.ReadUInt16BigEndian(frame.AsSpan(4)).Should().Be(0);
+        Crc16.Validate(frame).Should().BeTrue();
+    }
+
+    // ── WriteMultipleRegisters (FC16) ────────────────────────────────────────
+
+    [Fact]
+    public void WriteMultipleRegisters_TwoValues_BuildsCorrectFrame()
+    {
+        var frame = _builder.WriteMultipleRegisters(1, 0, [0x000A, 0x0102]);
+
+        // Length: 7 (header) + 4 (data) + 2 (CRC) = 13
+        frame.Should().HaveCount(13);
+        frame[0].Should().Be(1);
+        frame[1].Should().Be(0x10, "function code FC16");
+        BinaryPrimitives.ReadUInt16BigEndian(frame.AsSpan(2)).Should().Be(0, "start address");
+        BinaryPrimitives.ReadUInt16BigEndian(frame.AsSpan(4)).Should().Be(2, "quantity");
+        frame[6].Should().Be(4, "byte count = 2 registers * 2 bytes");
+        BinaryPrimitives.ReadUInt16BigEndian(frame.AsSpan(7)).Should().Be(0x000A, "first value");
+        BinaryPrimitives.ReadUInt16BigEndian(frame.AsSpan(9)).Should().Be(0x0102, "second value");
+        Crc16.Validate(frame).Should().BeTrue();
+    }
+
+    [Fact]
+    public void WriteMultipleRegisters_SingleValue_BuildsCorrectFrame()
+    {
+        var frame = _builder.WriteMultipleRegisters(1, 50, [0xABCD]);
+
+        // Length: 7 + 2 + 2 = 11
+        frame.Should().HaveCount(11);
+        frame[6].Should().Be(2, "byte count = 1 register * 2 bytes");
+        BinaryPrimitives.ReadUInt16BigEndian(frame.AsSpan(7)).Should().Be(0xABCD);
+        Crc16.Validate(frame).Should().BeTrue();
+    }
+
+    // ── ReportSlaveId (FC17) ─────────────────────────────────────────────────
+
+    [Fact]
+    public void ReportSlaveId_BuildsCorrect4ByteFrame()
+    {
+        var frame = _builder.ReportSlaveId(1);
+
+        frame.Should().HaveCount(4);
+        frame[0].Should().Be(1, "slave ID");
+        frame[1].Should().Be(0x11, "function code FC17");
+        Crc16.Validate(frame).Should().BeTrue();
+    }
+
+    [Fact]
+    public void ReportSlaveId_DifferentSlaveIds_ProduceDifferentFrames()
+    {
+        var frame1 = _builder.ReportSlaveId(1);
+        var frame2 = _builder.ReportSlaveId(2);
+
+        frame1[0].Should().NotBe(frame2[0]);
+        // CRC should also differ
+        frame1[2..].Should().NotEqual(frame2[2..]);
+    }
+}

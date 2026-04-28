@@ -15,4 +15,8 @@
     <PackageReference Include="System.IO.Ports" Version="10.0.5" />
   </ItemGroup>
 
+  <ItemGroup>
+    <InternalsVisibleTo Include="Modbus.Core.Tests" />
+  </ItemGroup>
+
 </Project>

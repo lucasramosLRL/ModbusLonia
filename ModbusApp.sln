@@ -1,4 +1,4 @@
-
+﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
@@ -6,6 +6,8 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Modbus.Core", "Modbus.Core\Modbus.Core.csproj", "{E4569ABA-4911-4C17-9006-338A5FC0329D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Modbus.Desktop", "Modbus.Desktop\Modbus.Desktop.csproj", "{3F7B8C9D-1E2A-4B5C-9D0E-F23456789012}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Modbus.Core.Tests", "Modbus.Core.Tests\Modbus.Core.Tests.csproj", "{848550EF-C174-4722-B7BB-9C8C008C2EBB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -24,5 +26,9 @@ Global
 		{3F7B8C9D-1E2A-4B5C-9D0E-F23456789012}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3F7B8C9D-1E2A-4B5C-9D0E-F23456789012}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3F7B8C9D-1E2A-4B5C-9D0E-F23456789012}.Release|Any CPU.Build.0 = Release|Any CPU
+		{848550EF-C174-4722-B7BB-9C8C008C2EBB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{848550EF-C174-4722-B7BB-9C8C008C2EBB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{848550EF-C174-4722-B7BB-9C8C008C2EBB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{848550EF-C174-4722-B7BB-9C8C008C2EBB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
