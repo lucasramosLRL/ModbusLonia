@@ -63,6 +63,9 @@ internal static class PortugueseStrings
         ["ScanCancelled"]        = "Varredura cancelada.",
         ["ErrorPrefix"]          = "Erro: {0}",
         ["DuplicateSerial"]      = "Já existe um dispositivo com o número de série {0:D7}.",
+        ["DuplicateIp"]          = "Já existe um dispositivo com o IP {0}.",
+        ["DuplicateRtuAddress"]  = "Já existe um dispositivo no endereço RTU {0}.",
+        ["ConnectFailed"]        = "Não foi possível conectar ao dispositivo. Verifique o endereço e as configurações.",
         ["DeviceSaved"]          = "Dispositivo salvo. Selecione outro da lista ou volte.",
 
         // DeviceDetailView

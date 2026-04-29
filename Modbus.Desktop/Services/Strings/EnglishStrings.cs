@@ -63,6 +63,9 @@ internal static class EnglishStrings
         ["ScanCancelled"]        = "Scan cancelled.",
         ["ErrorPrefix"]          = "Error: {0}",
         ["DuplicateSerial"]      = "A device with serial number {0:D7} already exists.",
+        ["DuplicateIp"]          = "A device with IP {0} already exists.",
+        ["DuplicateRtuAddress"]  = "A device with RTU address {0} already exists.",
+        ["ConnectFailed"]        = "Could not connect to the device. Check the address and settings.",
         ["DeviceSaved"]          = "Device saved. Select another from the list or go back.",
 
         // DeviceDetailView

@@ -4,6 +4,7 @@ using CommunityToolkit.Mvvm.Input;
 using Modbus.Core.Domain.Entities;
 using Modbus.Core.Domain.Repositories;
 using Modbus.Core.Domain.ValueObjects;
+using Modbus.Core.Services;
 using Modbus.Core.Services.Scanning;
 using Modbus.Desktop.Infrastructure;
 using Modbus.Desktop.Services;
@@ -18,6 +19,7 @@ public partial class AddDeviceViewModel : ObservableObject
     private readonly IDeviceScanService _scanService;
     private readonly IDeviceRepository _deviceRepository;
     private readonly IDeviceModelRepository _deviceModelRepository;
+    private readonly IModbusServiceFactory _serviceFactory;
     private readonly DeviceListViewModel _parent;
     private CancellationTokenSource? _scanCts;
 
@@ -103,14 +105,18 @@ public partial class AddDeviceViewModel : ObservableObject
     [ObservableProperty]
     private ScanResultViewModel? _selectedResult;
 
+    private bool _applyingResult;
+
     partial void OnSelectedResultChanged(ScanResultViewModel? value)
     {
         if (value is null) return;
+        _applyingResult = true;
         DeviceName = value.Result.SuggestedName;
         if (!IsTcp)
             SlaveId = value.Result.SlaveId;
         if (value.Result.Tcp is not null)
             DeviceIp = value.Result.Tcp.IpAddress;
+        _applyingResult = false;
     }
 
     [ObservableProperty]
@@ -119,8 +125,21 @@ public partial class AddDeviceViewModel : ObservableObject
     [ObservableProperty]
     private byte _slaveId = 1;
 
+    partial void OnSlaveIdChanged(byte value)
+    {
+        if (!_applyingResult && SelectedResult is not null && value != SelectedResult.Result.SlaveId)
+            SelectedResult = null;
+    }
+
     [ObservableProperty]
     private string _deviceIp = "";
+
+    partial void OnDeviceIpChanged(string value)
+    {
+        if (!_applyingResult && SelectedResult is not null &&
+            value != (SelectedResult.Result.Tcp?.IpAddress ?? ""))
+            SelectedResult = null;
+    }
 
     // ── Save state ────────────────────────────────────────────────────────────
 
@@ -128,7 +147,43 @@ public partial class AddDeviceViewModel : ObservableObject
     private bool _isSaving;
 
     [ObservableProperty]
-    private string? _saveError;
+    [NotifyPropertyChangedFor(nameof(SaveFeedbackColorHex))]
+    private bool _saveFeedbackIsError;
+
+    [ObservableProperty]
+    private string? _saveFeedback;
+
+    public string SaveFeedbackColorHex => SaveFeedbackIsError ? "#D32F2F" : "#388E3C";
+
+    private CancellationTokenSource? _feedbackCts;
+
+    private void SetFeedback(string message, bool isError)
+    {
+        _feedbackCts?.Cancel();
+        _feedbackCts?.Dispose();
+        _feedbackCts = new CancellationTokenSource();
+        SaveFeedbackIsError = isError;
+        SaveFeedback = message;
+        _ = ClearFeedbackAfterDelayAsync(_feedbackCts.Token);
+    }
+
+    private void ClearFeedback()
+    {
+        _feedbackCts?.Cancel();
+        _feedbackCts?.Dispose();
+        _feedbackCts = null;
+        SaveFeedback = null;
+    }
+
+    private async Task ClearFeedbackAfterDelayAsync(CancellationToken token)
+    {
+        try
+        {
+            await Task.Delay(4000, token);
+            SaveFeedback = null;
+        }
+        catch (OperationCanceledException) { }
+    }
 
     // ── Commands ──────────────────────────────────────────────────────────────
 
@@ -149,7 +204,7 @@ public partial class AddDeviceViewModel : ObservableObject
         ScanProgress = 0;
         ScanTotal = 1;
         FoundCount = 0;
-        SaveError = null;
+        ClearFeedback();
         IsScanning = true;
 
         _scanCts = new CancellationTokenSource();
@@ -238,17 +293,62 @@ public partial class AddDeviceViewModel : ObservableObject
     private async Task SaveAsync()
     {
         IsSaving = true;
-        SaveError = null;
+        ClearFeedback();
+        var loc = LocalizationService.Instance;
 
         try
         {
-            var serialNumber = SelectedResult?.Result.SerialNumber;
+            string effectiveIp = IsTcp ? (SelectedResult?.Result.Tcp?.IpAddress ?? DeviceIp) : "";
+            uint? serialNumber;
 
-            if (serialNumber.HasValue &&
-                await _deviceRepository.ExistsBySerialNumberAsync(serialNumber.Value))
+            if (SelectedResult is not null)
             {
-                SaveError = string.Format(LocalizationService.Instance["DuplicateSerial"], serialNumber.Value);
-                return;
+                // Scan path: serial already read, just check duplicates
+                serialNumber = SelectedResult.Result.SerialNumber;
+
+                if (serialNumber.HasValue &&
+                    await _deviceRepository.ExistsBySerialNumberAsync(serialNumber.Value))
+                {
+                    SetFeedback(string.Format(loc["DuplicateSerial"], serialNumber.Value), isError: true);
+                    return;
+                }
+                if (IsRtu && await _deviceRepository.ExistsByRtuSlaveIdAsync(SlaveId))
+                {
+                    SetFeedback(string.Format(loc["DuplicateRtuAddress"], SlaveId), isError: true);
+                    return;
+                }
+                if (IsTcp && await _deviceRepository.ExistsByTcpIpAsync(effectiveIp))
+                {
+                    SetFeedback(string.Format(loc["DuplicateIp"], effectiveIp), isError: true);
+                    return;
+                }
+            }
+            else
+            {
+                // Manual path: check address duplicates first, then connect to read serial
+                if (IsRtu && await _deviceRepository.ExistsByRtuSlaveIdAsync(SlaveId))
+                {
+                    SetFeedback(string.Format(loc["DuplicateRtuAddress"], SlaveId), isError: true);
+                    return;
+                }
+                if (IsTcp && await _deviceRepository.ExistsByTcpIpAsync(effectiveIp))
+                {
+                    SetFeedback(string.Format(loc["DuplicateIp"], effectiveIp), isError: true);
+                    return;
+                }
+
+                serialNumber = await ProbeSerialNumberAsync(effectiveIp);
+                if (serialNumber is null)
+                {
+                    SetFeedback(loc["ConnectFailed"], isError: true);
+                    return;
+                }
+
+                if (await _deviceRepository.ExistsBySerialNumberAsync(serialNumber.Value))
+                {
+                    SetFeedback(string.Format(loc["DuplicateSerial"], serialNumber.Value), isError: true);
+                    return;
+                }
             }
 
             int? deviceModelId = null;
@@ -269,34 +369,63 @@ public partial class AddDeviceViewModel : ObservableObject
             };
 
             if (SelectedTransport == TransportType.Rtu)
-            {
                 device.Rtu = RtuSettingsService.Instance.ToRtuConfig();
-            }
             else
-            {
-                var src = SelectedResult?.Result.Tcp;
                 device.Tcp = new TcpConfig
                 {
-                    IpAddress = src?.IpAddress ?? DeviceIp,
-                    Port      = src?.Port ?? TcpPort
+                    IpAddress = effectiveIp,
+                    Port      = SelectedResult?.Result.Tcp?.Port ?? TcpPort
                 };
-            }
 
             await _deviceRepository.AddAsync(device);
             await _parent.LoadDevicesAsync();
 
-            DeviceName    = "";
+            DeviceName     = "";
             SelectedResult = null;
-            SaveError     = null;
-            ScanStatus    = LocalizationService.Instance["DeviceSaved"];
+            ScanStatus     = loc["DeviceSaved"];
+            SetFeedback(loc["DeviceSaved"], isError: false);
         }
         catch (Exception ex)
         {
-            SaveError = ex.Message;
+            SetFeedback(ex.Message, isError: true);
         }
         finally
         {
             IsSaving = false;
+        }
+    }
+
+    /// <summary>Connects to the device, reads the NS register (FC04 addr 0) and returns the serial number, or null on failure.</summary>
+    private async Task<uint?> ProbeSerialNumberAsync(string effectiveIp)
+    {
+        var tempDevice = SelectedTransport == TransportType.Rtu
+            ? new ModbusDevice { Name = "", SlaveId = SlaveId, TransportType = TransportType.Rtu, Rtu = RtuSettingsService.Instance.ToRtuConfig() }
+            : new ModbusDevice { Name = "", SlaveId = SlaveId, TransportType = TransportType.Tcp, Tcp = new TcpConfig { IpAddress = effectiveIp, Port = TcpPort } };
+
+        bool rtuSuspended = false;
+        IModbusService? svc = null;
+        try
+        {
+            if (IsRtu)
+            {
+                await _parent.SuspendRtuPollingAsync();
+                rtuSuspended = true;
+            }
+
+            svc = _serviceFactory.Create(tempDevice);
+            using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(5));
+            await svc.ConnectAsync(cts.Token);
+            var words = await svc.ReadInputRegistersAsync(SlaveId, 0, 2, cts.Token);
+            return (uint)((words[0] << 16) | words[1]);
+        }
+        catch
+        {
+            return null;
+        }
+        finally
+        {
+            if (svc is not null) { try { await svc.DisconnectAsync(); } catch { } svc.Dispose(); }
+            if (rtuSuspended) _parent.ResumeRtuPolling();
         }
     }
 
@@ -314,11 +443,13 @@ public partial class AddDeviceViewModel : ObservableObject
         IDeviceScanService scanService,
         IDeviceRepository deviceRepository,
         IDeviceModelRepository deviceModelRepository,
+        IModbusServiceFactory serviceFactory,
         DeviceListViewModel parent)
     {
         _scanService           = scanService;
         _deviceRepository      = deviceRepository;
         _deviceModelRepository = deviceModelRepository;
+        _serviceFactory        = serviceFactory;
         _parent                = parent;
 
         RtuSettingsService.Instance.PropertyChanged += (_, _) =>

@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Modbus.Core.Domain.Entities;
+using Modbus.Core.Domain.Enums;
 using Modbus.Core.Domain.Repositories;
 
 namespace Modbus.Core.Persistence.Repositories;
@@ -24,6 +25,14 @@ public class DeviceRepository : IDeviceRepository
 
     public async Task<bool> ExistsBySerialNumberAsync(uint serialNumber, CancellationToken cancellationToken = default) =>
         await _db.Devices.AnyAsync(d => d.SerialNumber == serialNumber, cancellationToken);
+
+    public async Task<bool> ExistsByTcpIpAsync(string ipAddress, CancellationToken cancellationToken = default) =>
+        await _db.Devices.AnyAsync(
+            d => d.TransportType == TransportType.Tcp && d.Tcp!.IpAddress == ipAddress, cancellationToken);
+
+    public async Task<bool> ExistsByRtuSlaveIdAsync(byte slaveId, CancellationToken cancellationToken = default) =>
+        await _db.Devices.AnyAsync(
+            d => d.TransportType == TransportType.Rtu && d.SlaveId == slaveId, cancellationToken);
 
     public async Task AddAsync(ModbusDevice device, CancellationToken cancellationToken = default)
     {

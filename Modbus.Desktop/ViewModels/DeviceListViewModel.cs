@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Modbus.Core.Domain.Repositories;
 using Modbus.Core.Polling;
+using Modbus.Core.Services;
 using Modbus.Core.Services.Scanning;
 using System;
 using System.Collections.ObjectModel;
@@ -17,6 +18,7 @@ public partial class DeviceListViewModel : ObservableObject
     private readonly IRegisterValueRepository _registerValueRepository;
     private readonly IPollingEngine _pollingEngine;
     private readonly IDeviceScanService _scanService;
+    private readonly IModbusServiceFactory _serviceFactory;
     private readonly SettingsViewModel _settingsViewModel;
     private bool _pollingStarted;
 
@@ -33,14 +35,16 @@ public partial class DeviceListViewModel : ObservableObject
         IRegisterValueRepository registerValueRepository,
         IPollingEngine pollingEngine,
         IDeviceScanService scanService,
+        IModbusServiceFactory serviceFactory,
         SettingsViewModel settingsViewModel)
     {
-        _deviceRepository    = deviceRepository;
-        _deviceModelRepository = deviceModelRepository;
+        _deviceRepository        = deviceRepository;
+        _deviceModelRepository   = deviceModelRepository;
         _registerValueRepository = registerValueRepository;
-        _pollingEngine       = pollingEngine;
-        _scanService         = scanService;
-        _settingsViewModel   = settingsViewModel;
+        _pollingEngine           = pollingEngine;
+        _scanService             = scanService;
+        _serviceFactory          = serviceFactory;
+        _settingsViewModel       = settingsViewModel;
 
         _pollingEngine.RegisterValuesUpdated += OnRegisterValuesUpdated;
         _pollingEngine.DeviceConnectionFailed += OnDeviceConnectionFailed;
@@ -96,7 +100,7 @@ public partial class DeviceListViewModel : ObservableObject
     [RelayCommand]
     private void OpenAddDevice()
     {
-        var vm = new AddDeviceViewModel(_scanService, _deviceRepository, _deviceModelRepository, this);
+        var vm = new AddDeviceViewModel(_scanService, _deviceRepository, _deviceModelRepository, _serviceFactory, this);
         NavigationRequested?.Invoke(this, vm);
     }
 

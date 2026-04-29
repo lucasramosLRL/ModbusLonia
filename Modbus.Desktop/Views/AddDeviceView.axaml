@@ -237,11 +237,14 @@
                             </StackPanel>
                         </Grid>
 
-                        <!-- Save error -->
-                        <TextBlock Text="{Binding SaveError}"
-                                   IsVisible="{Binding SaveError, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
-                                   Foreground="#D32F2F"
-                                   FontSize="13" />
+                        <!-- Save feedback (fixed height prevents layout shift) -->
+                        <Border Height="20">
+                            <TextBlock Text="{Binding SaveFeedback}"
+                                       Foreground="{Binding SaveFeedbackColorHex}"
+                                       IsVisible="{Binding SaveFeedback, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                                       FontSize="13"
+                                       VerticalAlignment="Center" />
+                        </Border>
                     </StackPanel>
                 </Border>
 

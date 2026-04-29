@@ -256,7 +256,6 @@ Modbus.Core.Tests/
 
 
 ### Pending / future features - Attention! Keep it in the end of the file
-- Manual adding RTU or TCP device should try to connect using the address/IP informed by the user, get the serial number and validate it, not instantly save it on the BD without any verification. The user should be prompt if the device was successfully added or the software could not connect with it
 - Create a theme/style file or something where the software colors are all defined, making it easier to modify later, now all the colors are hardcoded on the multiple axaml files
 - Investigate if its necessary to prompt the user to reset the software when the language is changed, it seens like some texts won't change until a complete restart
 - Register write / configure screen / SQPF configuration UI (reading is implemented, writing is not)
