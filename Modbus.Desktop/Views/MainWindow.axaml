@@ -6,7 +6,8 @@
         x:DataType="vm:MainViewModel"
         Title="ModbusApp"
         Width="1100" Height="810"
-        MinWidth="900" MinHeight="700">
+        MinWidth="900" MinHeight="700"
+        WindowStartupLocation="CenterScreen">
       
     <Grid ColumnDefinitions="220,*">
 
