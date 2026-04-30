@@ -63,10 +63,10 @@
         <!-- Tab Control -->
         <TabControl SelectedIndex="{Binding SelectedTabIndex}">
 
-            <!-- Tab 1: Real-time Readings -->
+            <!-- Tab 1: Instantaneous Readings -->
             <TabItem>
                 <TabItem.Header>
-                    <TextBlock Text="{Binding [TabRealTime], Source={x:Static svc:LocalizationService.Instance}}" />
+                    <TextBlock Text="{Binding [TabInstantaneous], Source={x:Static svc:LocalizationService.Instance}}" />
                 </TabItem.Header>
 
                 <ScrollViewer Padding="0,12,0,0">
@@ -136,55 +136,44 @@
                 </ScrollViewer>
             </TabItem>
 
-            <!-- Tab 2: Raw Registers -->
+            <!-- Tab 2: Energies / Demands -->
             <TabItem>
                 <TabItem.Header>
-                    <TextBlock Text="{Binding [TabRawRegisters], Source={x:Static svc:LocalizationService.Instance}}" />
+                    <TextBlock Text="{Binding [TabEnergiesDemands], Source={x:Static svc:LocalizationService.Instance}}" />
                 </TabItem.Header>
+                <TextBlock Text="{Binding [TabComingSoon], Source={x:Static svc:LocalizationService.Instance}}"
+                           Opacity="0.5"
+                           Margin="0,12" />
+            </TabItem>
 
-                <DockPanel Margin="0,12,0,0">
-                    <!-- Empty state -->
-                    <TextBlock DockPanel.Dock="Top"
-                               Text="{Binding [NoRegisterValues], Source={x:Static svc:LocalizationService.Instance}}"
-                               IsVisible="{Binding !RegisterValues.Count}"
-                               Opacity="0.5"
-                               Margin="0,12" />
+            <!-- Tab 3: Inputs & Outputs -->
+            <TabItem>
+                <TabItem.Header>
+                    <TextBlock Text="{Binding [TabInputsOutputs], Source={x:Static svc:LocalizationService.Instance}}" />
+                </TabItem.Header>
+                <TextBlock Text="{Binding [TabComingSoon], Source={x:Static svc:LocalizationService.Instance}}"
+                           Opacity="0.5"
+                           Margin="0,12" />
+            </TabItem>
 
-                    <!-- Register values DataGrid -->
-                    <DataGrid ItemsSource="{Binding RegisterValues}"
-                              AutoGenerateColumns="False"
-                              IsReadOnly="True"
-                              GridLinesVisibility="Horizontal"
-                              CanUserResizeColumns="True">
-                        <DataGrid.Columns>
-                            <DataGridTextColumn Binding="{Binding Name}" Width="*">
-                                <DataGridTextColumn.Header>
-                                    <TextBlock Text="{Binding [ColName], Source={x:Static svc:LocalizationService.Instance}}" />
-                                </DataGridTextColumn.Header>
-                            </DataGridTextColumn>
-                            <DataGridTextColumn Binding="{Binding Address}" Width="80">
-                                <DataGridTextColumn.Header>
-                                    <TextBlock Text="{Binding [ColAddress], Source={x:Static svc:LocalizationService.Instance}}" />
-                                </DataGridTextColumn.Header>
-                            </DataGridTextColumn>
-                            <DataGridTextColumn Binding="{Binding RegisterType}" Width="80">
-                                <DataGridTextColumn.Header>
-                                    <TextBlock Text="{Binding [ColType], Source={x:Static svc:LocalizationService.Instance}}" />
-                                </DataGridTextColumn.Header>
-                            </DataGridTextColumn>
-                            <DataGridTextColumn Binding="{Binding DisplayValue}" Width="140">
-                                <DataGridTextColumn.Header>
-                                    <TextBlock Text="{Binding [ColValue], Source={x:Static svc:LocalizationService.Instance}}" />
-                                </DataGridTextColumn.Header>
-                            </DataGridTextColumn>
-                            <DataGridTextColumn Binding="{Binding Timestamp, StringFormat='{}{0:HH:mm:ss}'}" Width="110">
-                                <DataGridTextColumn.Header>
-                                    <TextBlock Text="{Binding [ColLastUpdated], Source={x:Static svc:LocalizationService.Instance}}" />
-                                </DataGridTextColumn.Header>
-                            </DataGridTextColumn>
-                        </DataGrid.Columns>
-                    </DataGrid>
-                </DockPanel>
+            <!-- Tab 4: Hourmeter -->
+            <TabItem>
+                <TabItem.Header>
+                    <TextBlock Text="{Binding [TabHourmeter], Source={x:Static svc:LocalizationService.Instance}}" />
+                </TabItem.Header>
+                <TextBlock Text="{Binding [TabComingSoon], Source={x:Static svc:LocalizationService.Instance}}"
+                           Opacity="0.5"
+                           Margin="0,12" />
+            </TabItem>
+
+            <!-- Tab 5: Status -->
+            <TabItem>
+                <TabItem.Header>
+                    <TextBlock Text="{Binding [TabStatus], Source={x:Static svc:LocalizationService.Instance}}" />
+                </TabItem.Header>
+                <TextBlock Text="{Binding [TabComingSoon], Source={x:Static svc:LocalizationService.Instance}}"
+                           Opacity="0.5"
+                           Margin="0,12" />
             </TabItem>
 
         </TabControl>

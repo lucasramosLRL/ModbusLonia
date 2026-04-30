@@ -43,11 +43,11 @@
                         Margin="0,0,16,16">
                     <DockPanel>
                         <TextBlock DockPanel.Dock="Top"
-                                   Text="{Binding [HubRealTimeReadings], Source={x:Static svc:LocalizationService.Instance}}"
+                                   Text="{Binding [HubReadings], Source={x:Static svc:LocalizationService.Instance}}"
                                    Classes="section-title"
                                    FontSize="{StaticResource FontSizeCardTitle}" />
                         <TextBlock DockPanel.Dock="Top"
-                                   Text="{Binding [HubRealTimeReadingsDesc], Source={x:Static svc:LocalizationService.Instance}}"
+                                   Text="{Binding [HubReadingsDesc], Source={x:Static svc:LocalizationService.Instance}}"
                                    FontSize="{StaticResource FontSizeMeta}"
                                    Opacity="0.6"
                                    TextWrapping="Wrap"

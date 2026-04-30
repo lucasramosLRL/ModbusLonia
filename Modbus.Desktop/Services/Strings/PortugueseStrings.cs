@@ -74,17 +74,14 @@ internal static class PortugueseStrings
         ["SlaveAddress"]         = "Endereço",
         ["Model"]                = "Modelo",
         ["Unknown"]              = "Desconhecido",
-        ["RegisterValues"]       = "Valores de Registrador",
-        ["NoRegisterValues"]     = "Sem valores de registrador. Os valores aparecerão após a primeira leitura bem-sucedida.",
-        ["ColName"]              = "Nome",
-        ["ColAddress"]           = "Endereço",
-        ["ColType"]              = "Tipo",
-        ["ColValue"]             = "Valor",
-        ["ColLastUpdated"]       = "Última Atualização",
 
         // Electrical Readings — Tabs
-        ["TabRealTime"]          = "Leituras em Tempo Real",
-        ["TabRawRegisters"]      = "Registradores Brutos",
+        ["TabInstantaneous"]     = "Leituras instantâneas",
+        ["TabEnergiesDemands"]   = "Energias / Demandas",
+        ["TabInputsOutputs"]     = "Entradas e Saídas",
+        ["TabHourmeter"]         = "Horímetro",
+        ["TabStatus"]            = "Status",
+        ["TabComingSoon"]        = "Em breve",
         ["NoLiveData"]           = "Sem dados ao vivo. Aguardando próxima leitura...",
 
         // Electrical Readings — Groups
@@ -127,8 +124,8 @@ internal static class PortugueseStrings
         ["RegFP3"]               = "Linha 3",
 
         // DeviceHubView
-        ["HubRealTimeReadings"]      = "Leitura em Tempo Real",
-        ["HubRealTimeReadingsDesc"]  = "Tensões, correntes, potências e frequência lidos diretamente do medidor.",
+        ["HubReadings"]              = "Leituras",
+        ["HubReadingsDesc"]          = "Tensões, correntes, potências e frequência lidos diretamente do medidor.",
         ["HubMassMemory"]            = "Memória de Massa",
         ["HubMassMemoryDesc"]        = "Histórico de medições armazenado internamente no medidor.",
         ["HubConfigure"]             = "Configurar",

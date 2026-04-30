@@ -74,17 +74,14 @@ internal static class EnglishStrings
         ["SlaveAddress"]         = "Address",
         ["Model"]                = "Model",
         ["Unknown"]              = "Unknown",
-        ["RegisterValues"]       = "Register Values",
-        ["NoRegisterValues"]     = "No register values yet. Values will appear after the first successful poll.",
-        ["ColName"]              = "Name",
-        ["ColAddress"]           = "Address",
-        ["ColType"]              = "Type",
-        ["ColValue"]             = "Value",
-        ["ColLastUpdated"]       = "Last Updated",
 
         // Electrical Readings — Tabs
-        ["TabRealTime"]          = "Real-time Readings",
-        ["TabRawRegisters"]      = "Raw Registers",
+        ["TabInstantaneous"]     = "Instantaneous",
+        ["TabEnergiesDemands"]   = "Energies / Demands",
+        ["TabInputsOutputs"]     = "Inputs & Outputs",
+        ["TabHourmeter"]         = "Hourmeter",
+        ["TabStatus"]            = "Status",
+        ["TabComingSoon"]        = "Coming soon",
         ["NoLiveData"]           = "No live data. Waiting for next poll...",
 
         // Electrical Readings — Groups
@@ -127,8 +124,8 @@ internal static class EnglishStrings
         ["RegFP3"]               = "Line 3",
 
         // DeviceHubView
-        ["HubRealTimeReadings"]      = "Real-Time Readings",
-        ["HubRealTimeReadingsDesc"]  = "Voltages, currents, power and frequency read directly from the meter.",
+        ["HubReadings"]              = "Readings",
+        ["HubReadingsDesc"]          = "Voltages, currents, power and frequency read directly from the meter.",
         ["HubMassMemory"]            = "Mass Memory",
         ["HubMassMemoryDesc"]        = "Measurement history stored internally in the meter.",
         ["HubConfigure"]             = "Configure",
