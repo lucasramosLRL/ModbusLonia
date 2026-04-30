@@ -89,8 +89,7 @@
                 <!-- Configurar -->
                 <Border Classes="card-hub"
                         Width="260" Height="160"
-                        Margin="0,0,16,16"
-                        Opacity="0.45">
+                        Margin="0,0,16,16">
                     <DockPanel>
                         <TextBlock DockPanel.Dock="Top"
                                    Text="{Binding [HubConfigure], Source={x:Static svc:LocalizationService.Instance}}"
@@ -105,7 +104,7 @@
                                    Foreground="{StaticResource BrushTextPrimary}" />
                         <Button DockPanel.Dock="Bottom"
                                 Content="{Binding [Open], Source={x:Static svc:LocalizationService.Instance}}"
-                                IsEnabled="False"
+                                Command="{Binding OpenConfigureCommand}"
                                 Padding="{StaticResource PaddingButton}"
                                 HorizontalAlignment="Left" />
                     </DockPanel>

@@ -43,4 +43,14 @@ public partial class DeviceHubViewModel : ObservableObject
         _ = detail.LoadValuesAsync();
         NavigationRequested?.Invoke(this, detail);
     }
+
+    [RelayCommand]
+    private void OpenConfigure()
+    {
+        var configure = new DeviceConfigureViewModel(
+            Device,
+            onGoBack: () => NavigationRequested?.Invoke(this, this));
+
+        NavigationRequested?.Invoke(this, configure);
+    }
 }

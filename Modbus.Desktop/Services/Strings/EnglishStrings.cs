@@ -138,6 +138,67 @@ internal static class EnglishStrings
         // RegisterValueViewModel
         ["RegisterFallback"]     = "Register {0}",
 
+        // DeviceConfigureView — side navigation
+        ["ConfigureTitle"]       = "Configure",
+        ["CfgGeneral"]           = "General",
+        ["CfgEthernet"]          = "Ethernet",
+        ["CfgWireless"]          = "Wireless",
+        ["CfgSntp"]              = "SNTP",
+        ["CfgIot"]               = "IoT",
+        ["CfgClock"]             = "Clock",
+        ["CfgInputsOutputs"]     = "Inputs & Outputs",
+
+        // DeviceConfigureView — common fields
+        ["CfgEnabled"]           = "Enabled",
+        ["CfgDisabled"]          = "Disabled",
+        ["CfgManual"]            = "Manual",
+        ["CfgSecurityNone"]      = "None",
+        ["CfgBrokerDefault"]     = "Default",
+
+        // DeviceConfigureView — General
+        ["CfgCode"]              = "Code",
+        ["CfgDeviceDesc"]        = "Description",
+        ["CfgConnectionType"]    = "Connection Type (TL)",
+        ["CfgIntegrationTime"]   = "Integration (TI)  0 – 60",
+        ["CfgCurrentInvert"]     = "Invert current",
+        ["CfgPfSequence"]        = "Float Point Sequence (Seq. PF)",
+        ["CfgThreshold"]         = "Threshold  (0.01 – 9999.99)",
+        ["CfgConfigPassword"]    = "Configuration password",
+
+        // DeviceConfigureView — Ethernet
+        ["CfgDhcp"]              = "Automatic DHCP",
+        ["CfgIpAddress"]         = "IP Address",
+        ["CfgSubnetMask"]        = "Subnet mask",
+        ["CfgGateway"]           = "Default gateway",
+        ["CfgDns"]               = "DNS",
+
+        // DeviceConfigureView — Wireless
+        ["CfgMode"]              = "Mode",
+        ["CfgSecurity"]          = "Security",
+        ["CfgWifiPassword"]      = "Wi-Fi password",
+
+        // DeviceConfigureView — SNTP
+        ["CfgNtpServer"]         = "NTP Server",
+        ["CfgTimezone"]          = "Timezone (UTC ± h)",
+        ["CfgSyncInterval"]      = "Sync interval (min)",
+
+        // DeviceConfigureView — IoT / MQTT
+        ["CfgSendInterval"]      = "Send interval (min)",
+        ["CfgSendOnHour"]        = "Send on full hour",
+        ["CfgMqttBroker"]        = "Broker",
+        ["CfgMqttDescId"]        = "Description / ID",
+        ["CfgMqttPort"]          = "Port",
+        ["CfgMqttTopic"]         = "Topic",
+        ["CfgMqttUser"]          = "Username",
+        ["CfgMqttToken"]         = "Token / Password",
+        ["CfgKeepAlive"]         = "Keep connection alive",
+        ["CfgKronCloud"]         = "KronCloud",
+        ["CfgTls"]               = "TLS",
+
+        // DeviceConfigureView — Clock
+        ["CfgCurrentTime"]       = "Current date and time",
+        ["CfgSyncSource"]        = "Sync source",
+
         // SettingsView
         ["SettingsTitle"]        = "Settings",
         ["Language"]             = "Language",
