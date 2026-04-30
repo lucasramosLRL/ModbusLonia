@@ -148,6 +148,11 @@ internal static class EnglishStrings
         ["CfgClock"]             = "Clock",
         ["CfgInputsOutputs"]     = "Inputs & Outputs",
 
+        // DeviceConfigureView — device info strip
+        ["CfgSerial"]            = "Serial",
+        ["CfgFirmware"]          = "Firmware",
+        ["CfgHardware"]          = "Hardware",
+
         // DeviceConfigureView — common fields
         ["CfgEnabled"]           = "Enabled",
         ["CfgDisabled"]          = "Disabled",

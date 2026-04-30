@@ -148,6 +148,11 @@ internal static class PortugueseStrings
         ["CfgClock"]             = "Relógio",
         ["CfgInputsOutputs"]     = "Entradas e Saídas",
 
+        // DeviceConfigureView — faixa de informações do dispositivo
+        ["CfgSerial"]            = "Série",
+        ["CfgFirmware"]          = "Firmware",
+        ["CfgHardware"]          = "Hardware",
+
         // DeviceConfigureView — campos comuns
         ["CfgEnabled"]           = "Habilitado",
         ["CfgDisabled"]          = "Desabilitado",

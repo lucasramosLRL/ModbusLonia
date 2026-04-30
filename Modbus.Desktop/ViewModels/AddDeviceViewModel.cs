@@ -360,12 +360,13 @@ public partial class AddDeviceViewModel : ObservableObject
 
             var device = new ModbusDevice
             {
-                Name          = DeviceName,
-                SlaveId       = SlaveId,
-                TransportType = SelectedTransport,
-                SerialNumber  = serialNumber,
-                IsActive      = true,
-                DeviceModelId = deviceModelId
+                Name            = DeviceName,
+                SlaveId         = SlaveId,
+                TransportType   = SelectedTransport,
+                SerialNumber    = serialNumber,
+                FirmwareVersion = SelectedResult?.Result.FirmwareVersion,
+                IsActive        = true,
+                DeviceModelId   = deviceModelId
             };
 
             if (SelectedTransport == TransportType.Rtu)

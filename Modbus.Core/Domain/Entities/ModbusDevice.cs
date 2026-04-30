@@ -12,6 +12,7 @@ public class ModbusDevice
     public byte SlaveId { get; set; }
     public TransportType TransportType { get; set; }
     public uint? SerialNumber { get; set; }
+    public byte? FirmwareVersion { get; set; }
     public bool IsActive { get; set; } = true;
     public DateTime? LastSeenAt { get; set; }
 

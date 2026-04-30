@@ -22,6 +22,48 @@
             </StackPanel>
         </Grid>
 
+        <!-- Device info strip: always visible regardless of selected section -->
+        <Border DockPanel.Dock="Top"
+                Classes="card"
+                Padding="16,10"
+                Margin="0,0,0,16">
+            <StackPanel Orientation="Horizontal" Spacing="40">
+                <StackPanel Spacing="2">
+                    <TextBlock Classes="label-small"
+                               Text="{Binding [Model], Source={x:Static svc:LocalizationService.Instance}}" />
+                    <TextBlock Text="{Binding Device.ModelDisplayName}"
+                               FontSize="{StaticResource FontSizeSectionTitle}"
+                               FontWeight="Medium"
+                               Foreground="{StaticResource BrushTextPrimary}" />
+                </StackPanel>
+                <StackPanel Spacing="2">
+                    <TextBlock Classes="label-small"
+                               Text="{Binding [CfgSerial], Source={x:Static svc:LocalizationService.Instance}}" />
+                    <TextBlock Text="{Binding SerialNumberText}"
+                               FontSize="{StaticResource FontSizeSectionTitle}"
+                               FontWeight="Medium"
+                               FontFamily="Consolas, Courier New, monospace"
+                               Foreground="{StaticResource BrushTextPrimary}" />
+                </StackPanel>
+                <StackPanel Spacing="2">
+                    <TextBlock Classes="label-small"
+                               Text="{Binding [CfgFirmware], Source={x:Static svc:LocalizationService.Instance}}" />
+                    <TextBlock Text="{Binding FirmwareText}"
+                               FontSize="{StaticResource FontSizeSectionTitle}"
+                               FontWeight="Medium"
+                               Foreground="{StaticResource BrushTextPrimary}" />
+                </StackPanel>
+                <StackPanel Spacing="2">
+                    <TextBlock Classes="label-small"
+                               Text="{Binding [CfgHardware], Source={x:Static svc:LocalizationService.Instance}}" />
+                    <TextBlock Text="{Binding HardwareText}"
+                               FontSize="{StaticResource FontSizeSectionTitle}"
+                               FontWeight="Medium"
+                               Foreground="{StaticResource BrushTextPrimary}" />
+                </StackPanel>
+            </StackPanel>
+        </Border>
+
         <!-- Sidebar + content -->
         <Grid ColumnDefinitions="200,*">
 
@@ -70,25 +112,27 @@
                             <TextBlock Text="{Binding [CfgGeneral], Source={x:Static svc:LocalizationService.Instance}}"
                                        Classes="section-title" />
 
-                            <!-- Read-only device info -->
-                            <StackPanel Orientation="Horizontal" Spacing="32">
-                                <StackPanel Spacing="2">
+                            <!-- Device info row: Código (read-only) + Endereço (editable) -->
+                            <Grid ColumnDefinitions="Auto,140,*" RowDefinitions="Auto">
+                                <StackPanel Grid.Column="0" Spacing="4" VerticalAlignment="Top">
                                     <TextBlock Classes="label-small"
                                                Text="{Binding [CfgCode], Source={x:Static svc:LocalizationService.Instance}}" />
-                                    <TextBlock Text="{Binding Device.ModelDisplayName}"
+                                    <TextBlock Text="{Binding DeviceCodeDisplay}"
                                                FontSize="{StaticResource FontSizeSectionTitle}"
                                                FontWeight="Medium"
-                                               Foreground="{StaticResource BrushTextPrimary}" />
+                                               FontFamily="Consolas, Courier New, monospace"
+                                               Foreground="{StaticResource BrushTextPrimary}"
+                                               Margin="0,6,0,0" />
                                 </StackPanel>
-                                <StackPanel Spacing="2">
+                                <StackPanel Grid.Column="1" Spacing="4" Margin="24,0,0,0">
                                     <TextBlock Classes="label-small"
                                                Text="{Binding [SlaveAddress], Source={x:Static svc:LocalizationService.Instance}}" />
-                                    <TextBlock Text="{Binding Device.SlaveId}"
-                                               FontSize="{StaticResource FontSizeSectionTitle}"
-                                               FontWeight="Medium"
-                                               Foreground="{StaticResource BrushTextPrimary}" />
+                                    <NumericUpDown Value="{Binding EditableSlaveId, Mode=TwoWay}"
+                                                   Minimum="1" Maximum="247" Increment="1"
+                                                   FormatString="0"
+                                                   HorizontalAlignment="Stretch" />
                                 </StackPanel>
-                            </StackPanel>
+                            </Grid>
 
                             <Border Height="1" Background="{StaticResource BrushBgSeparator}" Margin="-16,0" />
 
@@ -96,7 +140,7 @@
                             <StackPanel Spacing="4">
                                 <TextBlock Classes="label-small"
                                            Text="{Binding [CfgDeviceDesc], Source={x:Static svc:LocalizationService.Instance}}" />
-                                <TextBox />
+                                <TextBox Text="{Binding Description, Mode=TwoWay}" />
                             </StackPanel>
 
                             <!-- TP / TC / KE / Tipo de Ligação -->
@@ -142,39 +186,24 @@
                                           Foreground="{StaticResource BrushTextPrimary}" />
                             </StackPanel>
 
-                            <!-- Seq. PF -->
+                            <!-- Seq. PF — all 4 ComboBoxes share AllPfBytes; selecting a value
+                                 automatically swaps it with whichever position had it before -->
                             <StackPanel Spacing="6">
                                 <TextBlock Classes="label-small"
                                            Text="{Binding [CfgPfSequence], Source={x:Static svc:LocalizationService.Instance}}" />
                                 <StackPanel Orientation="Horizontal" Spacing="8">
-                                    <ComboBox Width="80">
-                                        <ComboBoxItem Content="F2" />
-                                        <ComboBoxItem Content="F3" />
-                                        <ComboBoxItem Content="F1" />
-                                        <ComboBoxItem Content="F0" />
-                                        <ComboBoxItem Content="EXP" />
-                                    </ComboBox>
-                                    <ComboBox Width="80">
-                                        <ComboBoxItem Content="F1" />
-                                        <ComboBoxItem Content="F3" />
-                                        <ComboBoxItem Content="F2" />
-                                        <ComboBoxItem Content="F0" />
-                                        <ComboBoxItem Content="EXP" />
-                                    </ComboBox>
-                                    <ComboBox Width="80">
-                                        <ComboBoxItem Content="F0" />
-                                        <ComboBoxItem Content="F3" />
-                                        <ComboBoxItem Content="F2" />
-                                        <ComboBoxItem Content="F1" />
-                                        <ComboBoxItem Content="EXP" />
-                                    </ComboBox>
-                                    <ComboBox Width="80">
-                                        <ComboBoxItem Content="EXP" />
-                                        <ComboBoxItem Content="F3" />
-                                        <ComboBoxItem Content="F2" />
-                                        <ComboBoxItem Content="F1" />
-                                        <ComboBoxItem Content="F0" />
-                                    </ComboBox>
+                                    <ComboBox Width="80"
+                                              ItemsSource="{Binding AllPfBytes}"
+                                              SelectedItem="{Binding PfPos0, Mode=TwoWay}" />
+                                    <ComboBox Width="80"
+                                              ItemsSource="{Binding AllPfBytes}"
+                                              SelectedItem="{Binding PfPos1, Mode=TwoWay}" />
+                                    <ComboBox Width="80"
+                                              ItemsSource="{Binding AllPfBytes}"
+                                              SelectedItem="{Binding PfPos2, Mode=TwoWay}" />
+                                    <ComboBox Width="80"
+                                              ItemsSource="{Binding AllPfBytes}"
+                                              SelectedItem="{Binding PfPos3, Mode=TwoWay}" />
                                 </StackPanel>
                             </StackPanel>
 
@@ -193,14 +222,6 @@
                                                FormatString="F2" Width="180" HorizontalAlignment="Left" />
                             </StackPanel>
 
-                            <Border Height="1" Background="{StaticResource BrushBgSeparator}" Margin="-16,0" />
-
-                            <!-- Senha de configuração -->
-                            <StackPanel Spacing="4" HorizontalAlignment="Left">
-                                <TextBlock Classes="label-small"
-                                           Text="{Binding [CfgConfigPassword], Source={x:Static svc:LocalizationService.Instance}}" />
-                                <TextBox PasswordChar="•" Width="240" />
-                            </StackPanel>
 
                         </StackPanel>
                     </Border>
