@@ -5,26 +5,25 @@
              x:Class="Modbus.Desktop.Views.DeviceDetailView"
              x:DataType="vm:DeviceDetailViewModel">
 
-    <DockPanel Margin="28,20">
+    <DockPanel Margin="{StaticResource MarginView}">
 
         <!-- Header -->
         <Grid DockPanel.Dock="Top" ColumnDefinitions="Auto,*,Auto" Margin="0,0,0,20">
             <Button Content="{Binding [Back], Source={x:Static svc:LocalizationService.Instance}}"
                     Command="{Binding GoBackCommand}"
-                    Padding="12,8"
+                    Padding="{StaticResource PaddingButtonSmall}"
                     VerticalAlignment="Center" />
             <StackPanel Grid.Column="1" Margin="20,0" VerticalAlignment="Center">
                 <TextBlock Text="{Binding Device.Name}"
-                           FontSize="24"
-                           FontWeight="SemiBold" />
+                           Classes="page-title" />
                 <TextBlock Text="{Binding Device.StatusText}"
-                           FontSize="13"
+                           FontSize="{StaticResource FontSizeSectionTitle}"
                            Opacity="0.65" />
             </StackPanel>
             <Button Grid.Column="2"
                     Content="{Binding [Refresh], Source={x:Static svc:LocalizationService.Instance}}"
                     Command="{Binding RefreshCommand}"
-                    Padding="16,8"
+                    Padding="{StaticResource PaddingButton}"
                     VerticalAlignment="Center" />
         </Grid>
 
@@ -36,33 +35,27 @@
                      Margin="0,0,0,12" />
 
         <!-- Device info card -->
-        <Border DockPanel.Dock="Top"
-                Padding="16"
-                Margin="0,0,0,16"
-                CornerRadius="8"
-                BorderThickness="1"
-                BorderBrush="#1A1A2E"
-                Background="#1A1A2E">
+        <Border DockPanel.Dock="Top" Classes="card" Margin="0,0,0,16">
             <Grid ColumnDefinitions="*,*,*,*">
                 <StackPanel Grid.Column="0" Spacing="4">
                     <TextBlock Text="{Binding [Transport], Source={x:Static svc:LocalizationService.Instance}}"
-                               FontSize="11" Opacity="0.55" Foreground="#FFFFFF" />
-                    <TextBlock Text="{Binding Device.TransportType}" FontWeight="Medium" Foreground="#FFFFFF" />
+                               Classes="label-small" />
+                    <TextBlock Text="{Binding Device.TransportType}" FontWeight="Medium" Foreground="{StaticResource BrushTextPrimary}" />
                 </StackPanel>
                 <StackPanel Grid.Column="1" Spacing="4">
                     <TextBlock Text="{Binding [Connection], Source={x:Static svc:LocalizationService.Instance}}"
-                               FontSize="11" Opacity="0.55" Foreground="#FFFFFF" />
-                    <TextBlock Text="{Binding Device.ConnectionAddress}" FontWeight="Medium" Foreground="#FFFFFF" />
+                               Classes="label-small" />
+                    <TextBlock Text="{Binding Device.ConnectionAddress}" FontWeight="Medium" Foreground="{StaticResource BrushTextPrimary}" />
                 </StackPanel>
                 <StackPanel Grid.Column="2" Spacing="4">
                     <TextBlock Text="{Binding [SlaveAddress], Source={x:Static svc:LocalizationService.Instance}}"
-                               FontSize="11" Opacity="0.55" Foreground="#FFFFFF" />
-                    <TextBlock Text="{Binding Device.SlaveId}" FontWeight="Medium" Foreground="#FFFFFF" />
+                               Classes="label-small" />
+                    <TextBlock Text="{Binding Device.SlaveId}" FontWeight="Medium" Foreground="{StaticResource BrushTextPrimary}" />
                 </StackPanel>
                 <StackPanel Grid.Column="3" Spacing="4">
                     <TextBlock Text="{Binding [Model], Source={x:Static svc:LocalizationService.Instance}}"
-                               FontSize="11" Opacity="0.55" Foreground="#FFFFFF" />
-                    <TextBlock Text="{Binding Device.ModelDisplayName}" FontWeight="Medium" Foreground="#FFFFFF" />
+                               Classes="label-small" />
+                    <TextBlock Text="{Binding Device.ModelDisplayName}" FontWeight="Medium" Foreground="{StaticResource BrushTextPrimary}" />
                 </StackPanel>
             </Grid>
         </Border>
@@ -89,17 +82,14 @@
                         <ItemsControl ItemsSource="{Binding ReadingGroups}">
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate x:DataType="vm:ReadingGroupViewModel">
-                                    <Border Background="#252540"
-                                            CornerRadius="8"
-                                            Padding="16"
-                                            Margin="0,0,0,4">
+                                    <Border Classes="reading-group" Margin="0,0,0,4">
                                         <StackPanel Spacing="12">
 
                                             <!-- Group header -->
                                             <TextBlock Text="{Binding GroupName}"
-                                                       FontSize="15"
+                                                       FontSize="{StaticResource FontSizeGroupHeader}"
                                                        FontWeight="SemiBold"
-                                                       Foreground="#FFFFFF"
+                                                       Foreground="{StaticResource BrushTextPrimary}"
                                                        Opacity="0.85" />
 
                                             <!-- Readings grid -->
@@ -111,27 +101,25 @@
                                                 </ItemsControl.ItemsPanel>
                                                 <ItemsControl.ItemTemplate>
                                                     <DataTemplate x:DataType="vm:ElectricalReadingViewModel">
-                                                        <Border Background="#1A1A2E"
-                                                                CornerRadius="6"
-                                                                Padding="14,10"
+                                                        <Border Classes="reading-box"
                                                                 Margin="0,0,8,8"
                                                                 MinWidth="170">
                                                             <StackPanel Spacing="4">
                                                                 <StackPanel Orientation="Horizontal" Spacing="6">
                                                                     <TextBlock Text="{Binding Name}"
-                                                                               FontSize="12"
+                                                                               FontSize="{StaticResource FontSizeMeta}"
                                                                                FontWeight="SemiBold"
-                                                                               Foreground="#7070A0" />
+                                                                               Foreground="{StaticResource BrushTextMuted}" />
                                                                     <TextBlock Text="{Binding Description}"
-                                                                               FontSize="11"
+                                                                               FontSize="{StaticResource FontSizeLabelSmall}"
                                                                                Opacity="0.45"
-                                                                               Foreground="#FFFFFF"
+                                                                               Foreground="{StaticResource BrushTextPrimary}"
                                                                                VerticalAlignment="Center" />
                                                                 </StackPanel>
                                                                 <TextBlock Text="{Binding DisplayValue}"
                                                                            FontSize="20"
                                                                            FontWeight="Medium"
-                                                                           Foreground="#FFFFFF" />
+                                                                           Foreground="{StaticResource BrushTextPrimary}" />
                                                             </StackPanel>
                                                         </Border>
                                                     </DataTemplate>

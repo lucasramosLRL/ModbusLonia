@@ -5,23 +5,22 @@
              x:Class="Modbus.Desktop.Views.DeviceListView"
              x:DataType="vm:DeviceListViewModel">
 
-    <DockPanel Margin="28,20">
+    <DockPanel Margin="{StaticResource MarginView}">
 
         <!-- Header -->
         <Grid DockPanel.Dock="Top" ColumnDefinitions="*,Auto,Auto" Margin="0,0,0,16">
             <TextBlock Text="{Binding [Devices], Source={x:Static svc:LocalizationService.Instance}}"
-                       FontSize="26"
-                       FontWeight="SemiBold"
+                       Classes="main-title"
                        VerticalAlignment="Center" />
             <Button Grid.Column="1"
                     Content="{Binding [AddDevice], Source={x:Static svc:LocalizationService.Instance}}"
                     Command="{Binding OpenAddDeviceCommand}"
-                    Padding="16,8"
+                    Padding="{StaticResource PaddingButton}"
                     Margin="0,0,8,0" />
             <Button Grid.Column="2"
                     Content="{Binding [Refresh], Source={x:Static svc:LocalizationService.Instance}}"
                     Command="{Binding LoadDevicesCommand}"
-                    Padding="16,8" />
+                    Padding="{StaticResource PaddingButton}" />
         </Grid>
 
         <!-- Loading bar -->
@@ -44,39 +43,34 @@
             <ItemsControl x:Name="DeviceList" ItemsSource="{Binding Devices}">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate DataType="{x:Type vm:DeviceItemViewModel}">
-                        <Border Padding="16"
-                                Margin="0,0,0,8"
-                                CornerRadius="8"
-                                BorderThickness="1"
-                                BorderBrush="#1A1A2E"
-                                Background="#1A1A2E">
+                        <Border Classes="card" Margin="0,0,0,8">
                             <Grid ColumnDefinitions="*,Auto">
 
                                 <!-- Left: device info -->
                                 <StackPanel Spacing="4">
                                     <TextBlock Text="{Binding Name}"
-                                               FontSize="16"
+                                               FontSize="{StaticResource FontSizeCardTitle}"
                                                FontWeight="SemiBold"
-                                               Foreground="#FFFFFF" />
+                                               Foreground="{StaticResource BrushTextPrimary}" />
                                     <TextBlock Text="{Binding ConnectionAddress}"
-                                               FontSize="13"
+                                               FontSize="{StaticResource FontSizeSectionTitle}"
                                                Opacity="0.65"
-                                               Foreground="#FFFFFF" />
+                                               Foreground="{StaticResource BrushTextPrimary}" />
                                     <StackPanel Orientation="Horizontal" Spacing="6">
                                         <TextBlock Text="{Binding TransportType}"
-                                                   FontSize="12"
+                                                   FontSize="{StaticResource FontSizeMeta}"
                                                    Opacity="0.55"
-                                                   Foreground="#FFFFFF" />
-                                        <TextBlock Text="·" Opacity="0.35" Foreground="#FFFFFF" />
+                                                   Foreground="{StaticResource BrushTextPrimary}" />
+                                        <TextBlock Text="·" Opacity="0.35" Foreground="{StaticResource BrushTextPrimary}" />
                                         <TextBlock Text="{Binding ModelDisplayName}"
-                                                   FontSize="12"
+                                                   FontSize="{StaticResource FontSizeMeta}"
                                                    Opacity="0.55"
-                                                   Foreground="#FFFFFF" />
-                                        <TextBlock Text="·" Opacity="0.35" Foreground="#FFFFFF" />
+                                                   Foreground="{StaticResource BrushTextPrimary}" />
+                                        <TextBlock Text="·" Opacity="0.35" Foreground="{StaticResource BrushTextPrimary}" />
                                         <TextBlock Text="{Binding SlaveIdText}"
-                                                   FontSize="12"
+                                                   FontSize="{StaticResource FontSizeMeta}"
                                                    Opacity="0.55"
-                                                   Foreground="#FFFFFF" />
+                                                   Foreground="{StaticResource BrushTextPrimary}" />
                                     </StackPanel>
                                 </StackPanel>
 
@@ -87,14 +81,14 @@
                                             Spacing="8">
                                     <TextBlock Text="{Binding StatusText}"
                                                HorizontalAlignment="Right"
-                                               FontSize="13"
+                                               FontSize="{StaticResource FontSizeSectionTitle}"
                                                FontWeight="Medium"
-                                               Foreground="#FFFFFF" />
+                                               Foreground="{StaticResource BrushTextPrimary}" />
                                     <TextBlock Text="{Binding LastSeenText}"
-                                               FontSize="11"
+                                               FontSize="{StaticResource FontSizeLabelSmall}"
                                                Opacity="0.6"
                                                HorizontalAlignment="Right"
-                                               Foreground="#FFFFFF" />
+                                               Foreground="{StaticResource BrushTextPrimary}" />
                                     <StackPanel Orientation="Horizontal"
                                               HorizontalAlignment="Right"
                                               Spacing="6">

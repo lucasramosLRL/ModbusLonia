@@ -8,28 +8,28 @@
         Width="1100" Height="810"
         MinWidth="900" MinHeight="700"
         WindowStartupLocation="CenterScreen">
-      
+
     <Grid ColumnDefinitions="220,*">
 
         <!-- Sidebar -->
-        <Border Grid.Column="0" Background="#1A1A2E">
+        <Border Grid.Column="0" Background="{StaticResource BrushBgDark}">
             <DockPanel>
 
                 <!-- App title -->
                 <Border DockPanel.Dock="Top" Padding="20,24,20,16">
                     <StackPanel Spacing="2">
                         <TextBlock Text="ModbusApp"
-                                   Foreground="White"
-                                   FontSize="18"
+                                   Foreground="{StaticResource BrushTextPrimary}"
+                                   FontSize="{StaticResource FontSizeAppTitle}"
                                    FontWeight="SemiBold" />
                         <TextBlock Text="{Binding [AppSubtitle], Source={x:Static svc:LocalizationService.Instance}}"
-                                   Foreground="#7070A0"
-                                   FontSize="11" />
+                                   Foreground="{StaticResource BrushTextSubtle}"
+                                   FontSize="{StaticResource FontSizeLabelSmall}" />
                     </StackPanel>
                 </Border>
 
                 <!-- Separator -->
-                <Border DockPanel.Dock="Top" Height="1" Background="#2A2A4A" Margin="16,0" />
+                <Border DockPanel.Dock="Top" Height="1" Background="{StaticResource BrushBgSeparator}" Margin="16,0" />
 
                 <!-- Nav items -->
                 <ListBox Background="Transparent"
@@ -39,27 +39,27 @@
                     <ListBox.Styles>
                         <Style Selector="ListBoxItem">
                             <Setter Property="Padding" Value="12,10" />
-                            <Setter Property="CornerRadius" Value="6" />
-                            <Setter Property="Foreground" Value="#9090B0" />
+                            <Setter Property="CornerRadius" Value="{StaticResource RadiusCardSmall}" />
+                            <Setter Property="Foreground" Value="{StaticResource BrushTextSubtle}" />
                         </Style>
                         <Style Selector="ListBoxItem:pointerover /template/ ContentPresenter">
-                            <Setter Property="Background" Value="#252540" />
+                            <Setter Property="Background" Value="{StaticResource BrushBgElevated}" />
                         </Style>
                         <Style Selector="ListBoxItem:selected /template/ ContentPresenter">
-                            <Setter Property="Background" Value="#2E2E5A" />
+                            <Setter Property="Background" Value="{StaticResource BrushBgSelected}" />
                         </Style>
                         <Style Selector="ListBoxItem:selected">
-                            <Setter Property="Foreground" Value="White" />
+                            <Setter Property="Foreground" Value="{StaticResource BrushTextPrimary}" />
                         </Style>
                     </ListBox.Styles>
                     <ListBox.ItemTemplate>
                         <DataTemplate DataType="{x:Type vm:NavItem}">
                             <StackPanel Orientation="Horizontal" Spacing="12">
                                 <TextBlock Text="{Binding Icon}"
-                                           FontSize="15"
+                                           FontSize="{StaticResource FontSizeGroupHeader}"
                                            VerticalAlignment="Center" />
                                 <TextBlock Text="{Binding Title}"
-                                           FontSize="14"
+                                           FontSize="{StaticResource FontSizeSectionTitle}"
                                            VerticalAlignment="Center" />
                             </StackPanel>
                         </DataTemplate>

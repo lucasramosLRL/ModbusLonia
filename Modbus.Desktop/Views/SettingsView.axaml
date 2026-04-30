@@ -5,25 +5,18 @@
              x:Class="Modbus.Desktop.Views.SettingsView"
              x:DataType="vm:SettingsViewModel">
 
-    <StackPanel Margin="28,20" Spacing="24">
+    <StackPanel Margin="{StaticResource MarginView}" Spacing="24">
 
         <TextBlock Text="{Binding [SettingsTitle], Source={x:Static svc:LocalizationService.Instance}}"
-                   FontSize="26"
-                   FontWeight="SemiBold" />
+                   Classes="main-title" />
 
         <!-- Language selection -->
-        <Border Padding="16"
-                CornerRadius="8"
-                BorderThickness="1"
-                BorderBrush="#1A1A2E"
-                Background="#1A1A2E"
+        <Border Classes="card"
                 Width="320"
                 HorizontalAlignment="Left">
             <StackPanel Spacing="10">
                 <TextBlock Text="{Binding [Language], Source={x:Static svc:LocalizationService.Instance}}"
-                           FontSize="13"
-                           FontWeight="SemiBold"
-                           Foreground="#FFFFFF" />
+                           Classes="section-title" />
                 <ComboBox ItemsSource="{Binding AvailableLanguages}"
                           SelectedItem="{Binding SelectedLanguage}"
                           HorizontalAlignment="Stretch">
@@ -37,35 +30,28 @@
         </Border>
 
         <!-- COM port settings -->
-        <Border Padding="16"
-                CornerRadius="8"
-                BorderThickness="1"
-                BorderBrush="#1A1A2E"
-                Background="#1A1A2E"
-                HorizontalAlignment="Left">
+        <Border Classes="card" HorizontalAlignment="Left">
             <StackPanel Spacing="12">
                 <TextBlock Text="{Binding [SerialPortSettings], Source={x:Static svc:LocalizationService.Instance}}"
-                           FontSize="13"
-                           FontWeight="SemiBold"
-                           Foreground="#FFFFFF" />
+                           Classes="section-title" />
                 <Grid ColumnDefinitions="160,160,130,130,130" RowDefinitions="Auto,Auto">
 
                     <!-- Row 0: labels -->
                     <TextBlock Grid.Row="0" Grid.Column="0"
                                Text="{Binding [ComPort], Source={x:Static svc:LocalizationService.Instance}}"
-                               FontSize="11" Opacity="0.55" Foreground="#FFFFFF" />
+                               Classes="label-small" />
                     <TextBlock Grid.Row="0" Grid.Column="1"
                                Text="{Binding [BaudRate], Source={x:Static svc:LocalizationService.Instance}}"
-                               FontSize="11" Opacity="0.55" Foreground="#FFFFFF" Margin="12,0,0,0" />
+                               Classes="label-small" Margin="12,0,0,0" />
                     <TextBlock Grid.Row="0" Grid.Column="2"
                                Text="{Binding [DataBits], Source={x:Static svc:LocalizationService.Instance}}"
-                               FontSize="11" Opacity="0.55" Foreground="#FFFFFF" Margin="12,0,0,0" />
+                               Classes="label-small" Margin="12,0,0,0" />
                     <TextBlock Grid.Row="0" Grid.Column="3"
                                Text="{Binding [Parity], Source={x:Static svc:LocalizationService.Instance}}"
-                               FontSize="11" Opacity="0.55" Foreground="#FFFFFF" Margin="12,0,0,0" />
+                               Classes="label-small" Margin="12,0,0,0" />
                     <TextBlock Grid.Row="0" Grid.Column="4"
                                Text="{Binding [StopBits], Source={x:Static svc:LocalizationService.Instance}}"
-                               FontSize="11" Opacity="0.55" Foreground="#FFFFFF" Margin="12,0,0,0" />
+                               Classes="label-small" Margin="12,0,0,0" />
 
                     <!-- Row 1: controls -->
                     <Grid Grid.Row="1" Grid.Column="0" ColumnDefinitions="*,Auto" Margin="0,4,0,0">
@@ -104,8 +90,8 @@
                               Margin="12,4,0,0" />
                 </Grid>
                 <TextBlock Text="{Binding [PortUnavailable], Source={x:Static svc:LocalizationService.Instance}}"
-                           FontSize="12"
-                           Foreground="#FFB300"
+                           FontSize="{StaticResource FontSizeMeta}"
+                           Foreground="{StaticResource BrushWarningOrange}"
                            IsVisible="{Binding IsPortUnavailable}"
                            Margin="0,6,0,0" />
             </StackPanel>
