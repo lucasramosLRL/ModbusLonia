@@ -182,6 +182,8 @@ internal static class PortugueseStrings
         ["CfgMode"]              = "Modo",
         ["CfgSecurity"]          = "Segurança",
         ["CfgWifiPassword"]      = "Senha Wi-Fi",
+        ["CfgModuleVersion"]     = "Ver. módulo",
+        ["CfgBtPassword"]        = "Senha",
 
         // DeviceConfigureView — SNTP
         ["CfgNtpServer"]         = "Servidor NTP",

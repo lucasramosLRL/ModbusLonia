@@ -290,30 +290,147 @@
 
                     <!-- ── Sem fio ────────────────────────────────────────── -->
                     <Border Classes="card" IsVisible="{Binding IsWireless}">
-                        <StackPanel Spacing="16">
+                        <StackPanel Spacing="20">
                             <TextBlock Text="{Binding [CfgWireless], Source={x:Static svc:LocalizationService.Instance}}"
                                        Classes="section-title" />
-                            <CheckBox Content="{Binding [CfgEnabled], Source={x:Static svc:LocalizationService.Instance}}"
-                                      Foreground="{StaticResource BrushTextPrimary}" />
-                            <Grid ColumnDefinitions="*,*,*" RowDefinitions="Auto">
-                                <StackPanel Grid.Column="0" Spacing="4">
-                                    <TextBlock Classes="label-small" Text="SSID" />
-                                    <TextBox />
-                                </StackPanel>
-                                <StackPanel Grid.Column="1" Spacing="4" Margin="12,0,0,0">
-                                    <TextBlock Classes="label-small"
-                                               Text="{Binding [CfgSecurity], Source={x:Static svc:LocalizationService.Instance}}" />
-                                    <ComboBox HorizontalAlignment="Stretch">
-                                        <ComboBoxItem Content="WPA2" />
-                                        <ComboBoxItem Content="WEP" />
-                                        <ComboBoxItem Content="{Binding [CfgSecurityNone], Source={x:Static svc:LocalizationService.Instance}}" />
-                                    </ComboBox>
-                                </StackPanel>
-                                <StackPanel Grid.Column="2" Spacing="4" Margin="12,0,0,0">
-                                    <TextBlock Classes="label-small"
-                                               Text="{Binding [CfgWifiPassword], Source={x:Static svc:LocalizationService.Instance}}" />
-                                    <TextBox PasswordChar="•" />
-                                </StackPanel>
+
+                            <!-- Active mode selector -->
+                            <StackPanel Spacing="4">
+                                <TextBlock Classes="label-small"
+                                           Text="{Binding [CfgMode], Source={x:Static svc:LocalizationService.Instance}}" />
+                                <ComboBox Width="240" HorizontalAlignment="Left">
+                                    <ComboBoxItem Content="{Binding [CfgDisabled], Source={x:Static svc:LocalizationService.Instance}}" />
+                                    <ComboBoxItem Content="Wi-Fi" />
+                                    <ComboBoxItem Content="Bluetooth" />
+                                    <ComboBoxItem Content="Wi-Fi + Bluetooth" />
+                                </ComboBox>
+                            </StackPanel>
+
+                            <Border Height="1" Background="{StaticResource BrushBgSeparator}" Margin="-16,0" />
+
+                            <!-- Wi-Fi + Bluetooth side by side -->
+                            <Grid ColumnDefinitions="*,16,*">
+
+                                <!-- Wi-Fi -->
+                                <Border Grid.Column="0"
+                                        Background="{StaticResource BrushBgElevated}"
+                                        CornerRadius="{StaticResource RadiusCardSmall}"
+                                        Padding="16">
+                                    <StackPanel Spacing="14">
+                                        <TextBlock Text="Wi-Fi"
+                                                   FontSize="{StaticResource FontSizeSectionTitle}"
+                                                   FontWeight="SemiBold"
+                                                   Foreground="{StaticResource BrushTextPrimary}"
+                                                   Opacity="0.7" />
+
+                                        <!-- SSID + Security + Password -->
+                                        <StackPanel Spacing="4">
+                                            <TextBlock Classes="label-small" Text="SSID" />
+                                            <TextBox />
+                                        </StackPanel>
+                                        <StackPanel Spacing="4">
+                                            <TextBlock Classes="label-small"
+                                                       Text="{Binding [CfgWifiPassword], Source={x:Static svc:LocalizationService.Instance}}" />
+                                            <TextBox PasswordChar="•" />
+                                        </StackPanel>
+
+                                        <!-- Module version (read-only) -->
+                                        <StackPanel Spacing="4">
+                                            <TextBlock Classes="label-small"
+                                                       Text="{Binding [CfgModuleVersion], Source={x:Static svc:LocalizationService.Instance}}" />
+                                            <TextBlock Text="—"
+                                                       FontSize="{StaticResource FontSizeSectionTitle}"
+                                                       FontWeight="Medium"
+                                                       Foreground="{StaticResource BrushTextPrimary}"
+                                                       Opacity="0.45" />
+                                        </StackPanel>
+
+                                        <Border Height="1" Background="{StaticResource BrushBgSeparator}" Margin="-16,0" />
+
+                                        <!-- IP / Mask / Gateway -->
+                                        <StackPanel Spacing="4">
+                                            <TextBlock Classes="label-small"
+                                                       Text="{Binding [CfgIpAddress], Source={x:Static svc:LocalizationService.Instance}}" />
+                                            <TextBox Watermark="0.0.0.0" />
+                                        </StackPanel>
+                                        <Grid ColumnDefinitions="*,*" RowDefinitions="Auto">
+                                            <StackPanel Grid.Column="0" Spacing="4">
+                                                <TextBlock Classes="label-small"
+                                                           Text="{Binding [CfgSubnetMask], Source={x:Static svc:LocalizationService.Instance}}" />
+                                                <TextBox Watermark="255.255.255.0" />
+                                            </StackPanel>
+                                            <StackPanel Grid.Column="1" Spacing="4" Margin="10,0,0,0">
+                                                <TextBlock Classes="label-small"
+                                                           Text="{Binding [CfgGateway], Source={x:Static svc:LocalizationService.Instance}}" />
+                                                <TextBox Watermark="0.0.0.0" />
+                                            </StackPanel>
+                                        </Grid>
+
+                                        <!-- MAC + DHCP -->
+                                        <Grid ColumnDefinitions="*,*" RowDefinitions="Auto">
+                                            <StackPanel Grid.Column="0" Spacing="4">
+                                                <TextBlock Classes="label-small"
+                                                           Text="{Binding [CfgMacAddress], Source={x:Static svc:LocalizationService.Instance}}" />
+                                                <TextBlock Text="—"
+                                                           FontFamily="Consolas, Courier New, monospace"
+                                                           FontSize="{StaticResource FontSizeSectionTitle}"
+                                                           FontWeight="Medium"
+                                                           Foreground="{StaticResource BrushTextPrimary}"
+                                                           Opacity="0.45" />
+                                            </StackPanel>
+                                            <StackPanel Grid.Column="1" Spacing="4" Margin="10,0,0,0">
+                                                <TextBlock Classes="label-small" Text="DHCP" />
+                                                <ComboBox HorizontalAlignment="Stretch">
+                                                    <ComboBoxItem Content="OFF" />
+                                                    <ComboBoxItem Content="ON" />
+                                                </ComboBox>
+                                            </StackPanel>
+                                        </Grid>
+
+                                        <!-- DNS -->
+                                        <StackPanel Spacing="6">
+                                            <CheckBox Content="{Binding [CfgDns], Source={x:Static svc:LocalizationService.Instance}}"
+                                                      Foreground="{StaticResource BrushTextPrimary}" />
+                                            <TextBox Watermark="208.67.222.222" />
+                                        </StackPanel>
+                                    </StackPanel>
+                                </Border>
+
+                                <!-- Bluetooth -->
+                                <Border Grid.Column="2"
+                                        Background="{StaticResource BrushBgElevated}"
+                                        CornerRadius="{StaticResource RadiusCardSmall}"
+                                        Padding="16">
+                                    <StackPanel Spacing="14">
+                                        <TextBlock Text="Bluetooth"
+                                                   FontSize="{StaticResource FontSizeSectionTitle}"
+                                                   FontWeight="SemiBold"
+                                                   Foreground="{StaticResource BrushTextPrimary}"
+                                                   Opacity="0.7" />
+
+                                        <StackPanel Spacing="4">
+                                            <TextBlock Classes="label-small"
+                                                       Text="{Binding [CfgDeviceDesc], Source={x:Static svc:LocalizationService.Instance}}" />
+                                            <TextBox />
+                                        </StackPanel>
+                                        <StackPanel Spacing="4">
+                                            <TextBlock Classes="label-small"
+                                                       Text="{Binding [CfgBtPassword], Source={x:Static svc:LocalizationService.Instance}}" />
+                                            <TextBox />
+                                        </StackPanel>
+                                        <StackPanel Spacing="4">
+                                            <TextBlock Classes="label-small"
+                                                       Text="{Binding [CfgMacAddress], Source={x:Static svc:LocalizationService.Instance}}" />
+                                            <TextBlock Text="—"
+                                                       FontFamily="Consolas, Courier New, monospace"
+                                                       FontSize="{StaticResource FontSizeSectionTitle}"
+                                                       FontWeight="Medium"
+                                                       Foreground="{StaticResource BrushTextPrimary}"
+                                                       Opacity="0.45" />
+                                        </StackPanel>
+                                    </StackPanel>
+                                </Border>
+
                             </Grid>
                         </StackPanel>
                     </Border>
