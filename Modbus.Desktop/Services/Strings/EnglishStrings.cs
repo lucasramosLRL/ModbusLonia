@@ -176,6 +176,7 @@ internal static class EnglishStrings
         ["CfgSubnetMask"]        = "Subnet mask",
         ["CfgGateway"]           = "Default gateway",
         ["CfgDns"]               = "DNS",
+        ["CfgMacAddress"]        = "MAC Address",
 
         // DeviceConfigureView — Wireless
         ["CfgMode"]              = "Mode",

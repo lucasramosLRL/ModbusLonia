@@ -228,33 +228,63 @@
 
                     <!-- ── Ethernet ──────────────────────────────────────── -->
                     <Border Classes="card" IsVisible="{Binding IsEthernet}">
-                        <StackPanel Spacing="16">
+                        <StackPanel Spacing="20">
                             <TextBlock Text="{Binding [CfgEthernet], Source={x:Static svc:LocalizationService.Instance}}"
                                        Classes="section-title" />
-                            <CheckBox Content="{Binding [CfgDhcp], Source={x:Static svc:LocalizationService.Instance}}"
-                                      Foreground="{StaticResource BrushTextPrimary}" />
-                            <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto">
-                                <StackPanel Grid.Column="0" Grid.Row="0" Spacing="4">
+
+                            <!-- DHCP -->
+                            <StackPanel Spacing="4">
+                                <TextBlock Classes="label-small" Text="DHCP" />
+                                <ComboBox Width="200" HorizontalAlignment="Left">
+                                    <ComboBoxItem Content="OFF" />
+                                    <ComboBoxItem Content="ON" />
+                                </ComboBox>
+                            </StackPanel>
+
+                            <Border Height="1" Background="{StaticResource BrushBgSeparator}" Margin="-16,0" />
+
+                            <!-- IP / Mask / Gateway -->
+                            <Grid ColumnDefinitions="*,*,*" RowDefinitions="Auto">
+                                <StackPanel Grid.Column="0" Spacing="4">
                                     <TextBlock Classes="label-small"
                                                Text="{Binding [CfgIpAddress], Source={x:Static svc:LocalizationService.Instance}}" />
-                                    <TextBox />
+                                    <TextBox Watermark="0.0.0.0" />
                                 </StackPanel>
-                                <StackPanel Grid.Column="1" Grid.Row="0" Spacing="4" Margin="12,0,0,0">
+                                <StackPanel Grid.Column="1" Spacing="4" Margin="12,0,0,0">
                                     <TextBlock Classes="label-small"
                                                Text="{Binding [CfgSubnetMask], Source={x:Static svc:LocalizationService.Instance}}" />
-                                    <TextBox />
+                                    <TextBox Watermark="255.255.255.0" />
                                 </StackPanel>
-                                <StackPanel Grid.Column="0" Grid.Row="1" Spacing="4" Margin="0,12,0,0">
+                                <StackPanel Grid.Column="2" Spacing="4" Margin="12,0,0,0">
                                     <TextBlock Classes="label-small"
                                                Text="{Binding [CfgGateway], Source={x:Static svc:LocalizationService.Instance}}" />
-                                    <TextBox />
-                                </StackPanel>
-                                <StackPanel Grid.Column="1" Grid.Row="1" Spacing="4" Margin="12,12,0,0">
-                                    <TextBlock Classes="label-small"
-                                               Text="{Binding [CfgDns], Source={x:Static svc:LocalizationService.Instance}}" />
-                                    <TextBox />
+                                    <TextBox Watermark="0.0.0.0" />
                                 </StackPanel>
                             </Grid>
+
+                            <!-- MAC Address (read-only) -->
+                            <StackPanel Spacing="4">
+                                <TextBlock Classes="label-small"
+                                           Text="{Binding [CfgMacAddress], Source={x:Static svc:LocalizationService.Instance}}" />
+                                <TextBox IsReadOnly="True"
+                                         Watermark="—"
+                                         FontFamily="Consolas, Courier New, monospace"
+                                         Opacity="0.65"
+                                         HorizontalAlignment="Left"
+                                         Width="220" />
+                            </StackPanel>
+
+                            <Border Height="1" Background="{StaticResource BrushBgSeparator}" Margin="-16,0" />
+
+                            <!-- DNS -->
+                            <StackPanel Spacing="8">
+                                <CheckBox Content="{Binding [CfgDns], Source={x:Static svc:LocalizationService.Instance}}"
+                                          Foreground="{StaticResource BrushTextPrimary}" />
+                                <TextBox Watermark="208.67.222.222"
+                                         HorizontalAlignment="Left"
+                                         Width="200" />
+                            </StackPanel>
+
                         </StackPanel>
                     </Border>
 

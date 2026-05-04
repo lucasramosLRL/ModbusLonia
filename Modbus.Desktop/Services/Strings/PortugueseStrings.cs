@@ -176,6 +176,7 @@ internal static class PortugueseStrings
         ["CfgSubnetMask"]        = "Máscara de sub-rede",
         ["CfgGateway"]           = "Gateway padrão",
         ["CfgDns"]               = "DNS",
+        ["CfgMacAddress"]       = "Endereço MAC",
 
         // DeviceConfigureView — Sem fio
         ["CfgMode"]              = "Modo",
